@@ -82,7 +82,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 raise Exception("Could not find the UID tile for the scr_tile - something has gone wrong!")
                             print(uid_tile)
 
-                            
+
 
                     else:
                         logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Landsat PID: {}".format(scn_db_obj.PID))
