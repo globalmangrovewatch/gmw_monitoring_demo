@@ -14,10 +14,10 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
-class LandsatGMWChange(EODataDownUserAnalysis):
+class LandsatGMWSceneChange(EODataDownUserAnalysis):
     
     def __init__(self):
-        usr_req_keys = ["gmw_vec_file", "gmw_vec_lyr", "chng_lut_file", "chng_score_lut", "chng_uid_lut", "out_vec_path", "tmp_path"]
+        usr_req_keys = ["gmw_vec_file", "gmw_vec_lyr", "out_vec_path", "tmp_path"]
         EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWChangeTest', req_keys=usr_req_keys)
         
     def perform_analysis(self, scn_db_obj, sen_obj):
@@ -45,9 +45,14 @@ class LandsatGMWChange(EODataDownUserAnalysis):
             logger.debug("The basename for the processing is: {}".format(basename))
 
             # Create tmp directory
-            base_tmp_dir = os.path.join(self.params["tmp_path"], basename)
+            base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_{}_scn_chng".format(scn_db_obj.Product_ID, scn_db_obj.PID))
             if not os.path.exists(base_tmp_dir):
                 os.mkdir(base_tmp_dir)
+
+            # Create output directory
+            out_dir = os.path.join(self.params["out_vec_path"], "{}_{}".format(scn_db_obj.Product_ID, scn_db_obj.PID))
+            if not os.path.exists(out_dir):
+                os.mkdir(out_dir)
 
             # Get image BBOX as WGS84
             img_bbox = rsgis_utils.getImageBBOXInProj(img_file, 4326)
@@ -107,6 +112,8 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                 logger.debug("There are '{}' gmw pixels within the valid area of the input image.".format(n_gmw_pxls))
 
                 if n_gmw_pxls > 100:
+                    out_dict = dict()
+                    out_dict["gmw_scn_pxls"] = n_gmw_pxls
                     logger.debug("There are sufficient GMW pixels to continue analysis")
 
                     # Calculate NDVI
@@ -132,45 +139,40 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                     else:
                         n_gmw_chng_pxls = 0
                     logger.debug("There are '{}' change gmw pixels.".format(n_gmw_chng_pxls))
+                    out_dict["gmw_scn_chng_pxls"] = n_gmw_chng_pxls
 
                     if n_gmw_chng_pxls > 0:
                         logger.debug("There are change gmw pixels to continue processing.")
 
                         # Vectorise the change features.
-                        gmw_chng_vec = os.path.join(base_tmp_dir, "{}_chng_gmw_vec.geojson".format(basename))
+                        gmw_chng_vec = os.path.join(out_dir, "{}_chng_gmw_vec.geojson".format(basename))
                         rsgislib.vectorutils.polygoniseRaster2VecLyr(gmw_chng_vec, 'gmw_chng', 'GEOJSON', gmw_chng_img,
                                                                      imgBandNo=1, maskImg=gmw_chng_img, imgMaskBandNo=1,
                                                                      replace_file=True, replace_lyr=True,
                                                                      pxl_val_fieldname='PXLVAL')
-
-                        gmw_chng_wgs84_vec = os.path.join(base_tmp_dir, "{}_chng_gmw_vec_wgs84.geojson".format(basename))
-                        cmd = "ogr2ogr -f GEOJSON -overwrite -nln gmw_chng -t_srs EPSG:4326 {} {} gmw_chng".format(gmw_chng_wgs84_vec, gmw_chng_vec)
-                        logger.debug("Going to run command: '{}'".format(cmd))
-                        try:
-                            subprocess.check_call(cmd, shell=True)
-                        except OSError as e:
-                            raise Exception('Failed to run command: ' + cmd)
-
+                        out_dict["chng_feats_vec"] = gmw_chng_vec
+                        out_dict["chng_found"] = True
+                    else:
+                        out_dict["chng_found"] = False
 
                 else:
                     logger.debug("There were insufficient GMW pixels to continue analysis")
-                    success = False
+                    success = True
             else:
                 logger.debug("NOT proceeding with analysis as the image does not intersects with any GMW polygons.")
                 # Close ROI memory layer
                 gmw_roi_mem_ds = None
-                success = False
+                success = True
 
             # Remove the tmp directory to clean up...
-            #if os.path.exists(base_tmp_dir):
-            #    shutil.rmtree(base_tmp_dir)
+            if os.path.exists(base_tmp_dir):
+                shutil.rmtree(base_tmp_dir)
 
         except Exception as e:
             logger.debug("An error occurred during plugin processing. See stacktrace...", stack_info=True)
             logger.exception(e)
             success = False
 
-        success = False
         return success, out_dict
 
 

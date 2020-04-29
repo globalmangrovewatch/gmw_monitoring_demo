@@ -40,7 +40,7 @@ class LandsatClearSky(EODataDownUserAnalysis):
             basename = basename.replace('_valid', '')
             logger.debug("The basename for the processing is: {}".format(basename))
 
-            base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_clearsky".format(basename))
+            base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_{}_clearsky".format(scn_db_obj.Product_ID, scn_db_obj.PID))
             if not os.path.exists(base_tmp_dir):
                 os.mkdir(base_tmp_dir)
 
