@@ -14,73 +14,10 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
-def vector_translate(in_vec_file, in_vec_lyr, out_vec_file, out_vec_lyr=None, out_vec_drv='GPKG',
-                     drv_create_opts=[], lyr_create_opts=[], access_mode='overwrite', src_srs=None,
-                     dst_srs=None, force=False):
-    """
-    A function which translates a vector file to another format, similar to ogr2ogr. If you wish
-    to reproject the input file then provide a destination srs (e.g., "EPSG:27700", or wkt string,
-    or proj4 string).
-
-    :param in_vec_file: the input vector file.
-    :param in_vec_lyr: the input vector layer name
-    :param out_vec_file: the output vector file.
-    :param out_vec_lyr: the name of the output vector layer (if None then the same as the input).
-    :param out_vec_drv: the output vector file format (e.g., GPKG, GEOJSON, ESRI Shapefile, etc.)
-    :param drv_create_opts: a list of options for the creation of the output file.
-    :param lyr_create_opts: a list of options for the creation of the output layer.
-    :param access_mode: by default the function overwrites the output file but other
-                        options are: ['update', 'append', 'overwrite']
-    :param src_srs: provide a source spatial reference for the input vector file. Default=None.
-                    can be used to provide a projection where none has been specified or the
-                    information has gone missing. Can be used without performing a reprojection.
-    :param dst_srs: provide a spatial reference for the output image to be reprojected to. (Default=None)
-                    If specified then the file will be reprojected.
-    :param force: remove output file if it exists.
-
-    """
-    from osgeo import gdal
-    gdal.UseExceptions()
-
-    if os.path.exists(out_vec_file):
-        if force:
-            ds_in_vec = gdal.OpenEx(out_vec_file, gdal.OF_READONLY)
-            if ds_in_vec is None:
-                raise Exception("Could not open '{}'".format(out_vec_file))
-            file_lst = ds_in_vec.GetFileList()
-            for cfile in file_lst:
-                logger.debug("Deleting: {}".format(cfile))
-                os.remove(cfile)
-        else:
-            raise Exception("The output vector file ({}) already exists, remove it and re-run.".format(out_vec_file))
-
-    if out_vec_lyr is None:
-        out_vec_lyr = in_vec_lyr
-
-    reproject_lyr = False
-    if dst_srs is not None:
-        reproject_lyr = True
-
-    if src_srs is not None:
-        if dst_srs is None:
-            dst_srs = src_srs
-
-    opts = gdal.VectorTranslateOptions(options=drv_create_opts,
-                                       format=out_vec_drv,
-                                       accessMode=access_mode,
-                                       srcSRS=src_srs,
-                                       dstSRS=dst_srs,
-                                       reproject=reproject_lyr,
-                                       layerCreationOptions=lyr_create_opts,
-                                       layers=in_vec_lyr,
-                                       layerName=out_vec_lyr)
-
-    gdal.VectorTranslate(out_vec_file, in_vec_file, options=opts)
-
 class LandsatGMWChange(EODataDownUserAnalysis):
     
     def __init__(self):
-        usr_req_keys = ["gmw_vec_file", "gmw_vec_lyr", "chng_score", "out_vec_path", "tmp_path"]
+        usr_req_keys = ["gmw_vec_file", "gmw_vec_lyr", "chng_lut_file", "chng_score_lut", "chng_uid_lut", "out_vec_path", "tmp_path"]
         EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWChangeTest', req_keys=usr_req_keys)
         
     def perform_analysis(self, scn_db_obj, sen_obj):
