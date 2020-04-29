@@ -1,0 +1,71 @@
+{
+    "eodatadown":
+    {
+        "sensor":
+        {
+            "name":"LandsatGOOG",
+            "paths":
+            {
+                "download":"/Users/pete/Temp/eodd_user_analysis/data/landsat/downloads",
+                "ardwork":"/Users/pete/Temp/eodd_user_analysis/data/landsat/ard_work",
+                "ardfinal":"/Users/pete/Temp/eodd_user_analysis/data/landsat/ard",
+                "ardtmp":"/Users/pete/Temp/eodd_user_analysis/data/landsat/tmp"
+            },
+            "ardparams":
+            {
+                "dem":"/Users/pete/Temp/eodd_user_analysis/dem/srtm.tif"
+            },
+            "download":
+            {
+                "wrs2":[{"path":166, "row":63},
+                        {"path":166, "row":64},
+                        {"path":166, "row":65},
+                        {"path":166, "row":66}, 
+                        {"path":165, "row":65},
+                        {"path":165, "row":66}
+                        ],
+                "cloudcover":20,
+                "spacecraft":["LANDSAT_8", "LANDSAT_7"],
+                "sensor":["OLI_TIRS", "ETM"],
+                "collection":["T1"],
+                "startdate":"2019-01-01"
+            },
+            "googleinfo":
+            {
+                "projectname":"globalmangrovewatch-164501",
+                "googlejsonkey":"/path/to/GlobalMangroveWatch-ff1eedc28b94.json"
+            },
+            "plugins":
+            {
+                "analysis":
+                [
+                    {
+                        "path": "/Users/pete/Development/globalmangrovewatch/gmw_monitoring_demo/eodd_plugins/landsat",
+                        "module": "landsat_clearsky",
+                        "class": "LandsatClearSky",
+                        "params":
+                        {
+                            "tmp_path": "/Users/pete/Temp/eodd_user_analysis/plugin_tmp"
+                        }
+                    },
+                    {
+                        "path":"/Users/pete/Development/globalmangrovewatch/gmw_monitoring_demo/eodd_plugins/landsat",
+                        "module":"landsat_gmw_change",
+                        "class":"LandsatGMWChange",
+                        "params":
+                        {
+                            "gmw_vec_file":"/Users/pete/Dropbox/University/Research/Data/Mangroves/GMW/GMW_MangroveExtent_WGS84_v2.0.gpkg",
+                            "gmw_vec_lyr":"gmw2016v2.0",
+                            "chng_lut_file":"/Users/pete/Temp/gmw_monitoring_files/gmw_monitor_lut.gpkg",
+                            "chng_score_lut":"score_imgs",
+                            "chng_uid_lut":"uid_imgs",
+                            "out_vec_path":"/Users/pete/Temp/eodd_user_analysis/vec_outs",
+                            "tmp_path":"/Users/pete/Temp/eodd_user_analysis/plugin_tmp"
+
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

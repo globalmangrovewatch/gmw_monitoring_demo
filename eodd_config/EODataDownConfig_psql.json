@@ -1,0 +1,29 @@
+{
+    "eodatadown":
+    {
+        "details":
+        {
+            "name":"Test User Analysis",
+            "description":"System to test user plugins for analysis."
+        },
+        "database":
+        {
+            "connection":"postgresql://eodduser:aberdata@127.0.0.1:5432/eodd_dev_db"
+        },
+        "sensors":
+        {
+            "GEDI":
+            {
+                "config":"/Users/pete/Temp/eodd_user_analysis/scripts/config/GEDI.json"
+            },
+            "ICESAT2":
+            {
+                "config":"/Users/pete/Temp/eodd_user_analysis/scripts/config/ICESAT2.json"
+            },
+            "LandsatGOOG":
+            {
+                "config":"/Users/pete/Temp/eodd_user_analysis/scripts/config/LandsatGoog.json"
+            }
+        }
+    }
+}
