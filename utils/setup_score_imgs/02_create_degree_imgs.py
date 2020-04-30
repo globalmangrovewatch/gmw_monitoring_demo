@@ -44,8 +44,6 @@ with open(input_file) as f:
     bboxes = json.load(f)
 
     for bbox in bboxes["bboxes"]:
-        #print("{}".format(bbox))
-
         min_lon = int(round(bbox[0]))
         max_lon = int(round(bbox[1]))
         min_lat = int(round(bbox[2]))
@@ -71,17 +69,14 @@ with open(input_file) as f:
         scr_file_name = "gmw_tile_{}{}_chng_scr.kea".format(lon_name, lat_name)
         uid_file_name = "gmw_tile_{}{}_chng_uid.kea".format(lon_name, lat_name)
 
-        print(scr_file_name)
-        print(uid_file_name)
-
         scr_file_path = os.path.join(out_scores_dir, scr_file_name)
         uid_file_path = os.path.join(out_uid_dir, uid_file_name)
 
-        rsgislib.imageutils.createBlankImgFromBBOX([min_lon, max_lon, min_lat, max_lat], wkt_str, scr_file_path,
-                                                   out_img_res, 0, 1, 'KEA', rsgislib.TYPE_8UINT, snap2grid=False)
+        #rsgislib.imageutils.createBlankImgFromBBOX([min_lon, max_lon, min_lat, max_lat], wkt_str, scr_file_path,
+        #                                           out_img_res, 0, 1, 'KEA', rsgislib.TYPE_8UINT, snap2grid=False)
 
         rsgislib.imageutils.createBlankImgFromBBOX([min_lon, max_lon, min_lat, max_lat], wkt_str, uid_file_path,
-                                                   out_img_res, 0, 3, 'KEA', rsgislib.TYPE_32UINT, snap2grid=False)
+                                                   out_img_res, 0, 5, 'KEA', rsgislib.TYPE_32UINT, snap2grid=False)
 
         print("")
 
