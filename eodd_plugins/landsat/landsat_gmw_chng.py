@@ -1,4 +1,5 @@
 from eodatadown.eodatadownuseranalysis import EODataDownUserAnalysis
+from eodatadown.eodatadownutils import EODataDownUtils
 
 import rsgislib
 import rsgislib.vectorutils
@@ -76,7 +77,7 @@ def update_uid_image(uid_img, chng_img, clrsky_img, year_obs, day_year_obs, tmp_
 class LandsatGMWChange(EODataDownUserAnalysis):
 
     def __init__(self):
-        usr_req_keys = ["chng_lut_file", "chng_score_lut", "chng_uid_lut", "tmp_path", "out_vec_path"]
+        usr_req_keys = ["chng_lut_file", "chng_score_lut", "chng_uid_lut", "tmp_path", "out_vec_path", "chng_vec_luts"]
         EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWChangeFnl', req_keys=usr_req_keys)
 
     def perform_analysis(self, scn_db_obj, sen_obj):
@@ -85,6 +86,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
         out_dict = None
         try:
             rsgis_utils = rsgislib.RSGISPyUtils()
+            eodd_utils = EODataDownUtils()
 
             scn_ext_info = scn_db_obj.ExtendedInfo
             if 'LandsatGMWChangeTest' in scn_ext_info:
@@ -188,6 +190,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                             if (n_clrcky_pxls > 0):
                                 logger.debug("There are clear sky pixels within the tile ({}) so continuing.".format(tile_basename))
 
+                                eodd_utils.get_file_lock(scr_tile, sleep_period=1, wait_iters=120, use_except=True)
                                 # Increment the score
                                 band_defs = [rsgislib.imagecalc.BandDefn('score', scr_tile, 1),
                                              rsgislib.imagecalc.BandDefn('clrsky', gmw_tile_clrsky_img, 1),
@@ -195,6 +198,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
                                 rsgislib.imagecalc.bandMath(scr_tile, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, True)
                                 rsgislib.imageutils.popImageStats(scr_tile, usenodataval=True, nodataval=0, calcpyramids=True)
+                                eodd_utils.release_file_lock(scr_tile)
 
                                 # Update the UID image
                                 acq_date = scn_db_obj.Date_Acquired
@@ -205,8 +209,10 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 rsgislib.imageutils.popImageStats(tmp_uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
 
                                 # Overwrite the UID image.
+                                eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=120, use_except=True)
                                 rsgislib.imageutils.gdal_translate(tmp_uid_tile, uid_tile, 'KEA')
                                 rsgislib.imageutils.popImageStats(tmp_uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
+                                eodd_utils.release_file_lock(uid_tile)
 
                                 # Clump to create UIDs
                                 tile_clumps = os.path.join(base_tmp_dir,"{}_{}_clumps.kea".format(basename, tile_basename))
@@ -242,11 +248,9 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                     rsgislib.rastergis.populateRATWithStats(scr_tile, tile_mskd_relbl_clumps, bs)
 
                                     obs_date_str = acq_date.strftime("%Y%m%d")
-                                    out_dir = os.path.join(self.params["out_vec_path"], "{}_{}".format(obs_date_str, basename))
-                                    if not os.path.exists(out_dir):
-                                        os.mkdir(out_dir)
 
-                                    out_tile_vec_file = os.path.join(out_dir, "{}_{}_chngs.gpkg".format(obs_date_str, basename))
+                                    out_tile_vec_file_name = "{}_{}_chngs.gpkg".format(obs_date_str, basename)
+                                    out_tile_vec_file = os.path.join(self.params["out_vec_path"], out_tile_vec_file_name)
                                     rsgislib.vectorutils.polygoniseRaster2VecLyr(out_tile_vec_file, tile_basename, 'GPKG',
                                                                                  tile_mskd_relbl_clumps, imgBandNo=1,
                                                                                  maskImg=tile_mskd_relbl_clumps,
@@ -261,6 +265,21 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                                                                  "Score"],
                                                                                outcolnames=None, outcoltypes=None)
 
+                                    # Update (create) the JSON LUT file.
+                                    lut_file_name = "gmw_{}_lut.json".format(tile_basename)
+                                    lut_file_path = os.path.join(self.params["chng_vec_luts"], lut_file_name)
+                                    eodd_utils.get_file_lock(lut_file_path, sleep_period=1, wait_iters=120, use_except=True)
+                                    if os.path.exists(lut_file_path):
+                                        lut_dict = rsgis_utils.readJSON2Dict(lut_file_path)
+                                    else:
+                                        lut_dict = dict()
+
+                                    lut_dict[obs_date_str] = dict()
+                                    lut_dict[obs_date_str]["file"] = out_tile_vec_file_name
+                                    lut_dict[obs_date_str]["layer"] = tile_basename
+
+                                    rsgis_utils.writeDict2JSON(lut_dict, lut_file_path)
+                                    eodd_utils.release_file_lock(lut_file_path)
                             else:
                                 logger.debug("There are no change pixels within the tile skipping.")
                                 success = True
