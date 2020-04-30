@@ -58,7 +58,6 @@
                             "gmw_vec_lyr":"gmw2016v2.0",
                             "out_vec_path":"/Users/pete/Temp/eodd_user_analysis/vec_outs",
                             "tmp_path":"/Users/pete/Temp/eodd_user_analysis/plugin_tmp"
-
                         }
                     },
                     {
@@ -71,8 +70,8 @@
                             "chng_score_lut":"score_imgs",
                             "chng_uid_lut":"uid_imgs",
                             "out_vec_path":"/Users/pete/Temp/eodd_user_analysis/gmw_chng_tiles",
-                            "tmp_path":"/Users/pete/Temp/eodd_user_analysis/plugin_tmp"
-
+                            "tmp_path":"/Users/pete/Temp/eodd_user_analysis/plugin_tmp",
+                            "chng_vec_luts":"/Users/pete/Temp/eodd_user_analysis/gmw_chng_tile_lut"
                         }
                     }
                 ]
