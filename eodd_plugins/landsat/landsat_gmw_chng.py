@@ -11,6 +11,7 @@ import logging
 import os
 import shutil
 import subprocess
+import numpy
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def delete_vector_file(vec_file, feedback=True):
             print("Deleting: {}".format(cfile))
         os.remove(cfile)
 
-def update_uid_image(score_img, uid_img, chng_img, year_obs, day_year_obs):
+def update_uid_image(score_img, uid_img, chng_img, clrsky_img, year_obs, day_year_obs):
     from rios import applier
     try:
         import tqdm
@@ -40,6 +41,7 @@ def update_uid_image(score_img, uid_img, chng_img, year_obs, day_year_obs):
     infiles.score_img = score_img
     infiles.uid_img = uid_img
     infiles.chng_img = chng_img
+    infiles.clrsky_img = clrsky_img
     outfiles = applier.FilenameAssociations()
     outfiles.uid_img = uid_img
     otherargs = applier.OtherInputs()
@@ -54,15 +56,16 @@ def update_uid_image(score_img, uid_img, chng_img, year_obs, day_year_obs):
         """
         This is an internal rios function
         """
-        uid_img_arr = inputs.uid_img
-        print(inputs.score_img.shape)
-        print(uid_img_arr.shape)
-        print(inputs.chng_img.shape)
-        print(otherargs.year_obs)
-        print(otherargs.day_year_obs)
-        print("\n\n")
+        uid_img_arr = numpy.copy(inputs.uid_img)
+        start_year = uid_img_arr[0]
+        chng_feats = inputs.chng_img[0]
+        new_chng_pxls = numpy.zeros_like(start_year)
+        new_chng_pxls[(start_year==0)&(chng_feats==1)] = 1
 
-
+        uid_img_arr[0, new_chng_pxls==1] = otherargs.year_obs
+        uid_img_arr[1, new_chng_pxls==1] = otherargs.day_year_obs
+        uid_img_arr[2, inputs.clrsky_img[0]==1] = otherargs.year_obs
+        uid_img_arr[3, inputs.clrsky_img[0]==1] = otherargs.day_year_obs
 
         outputs.uid_img = uid_img_arr
 
@@ -72,7 +75,7 @@ def update_uid_image(score_img, uid_img, chng_img, year_obs, day_year_obs):
 class LandsatGMWChange(EODataDownUserAnalysis):
 
     def __init__(self):
-        usr_req_keys = ["chng_lut_file", "chng_score_lut", "chng_uid_lut", "tmp_path"]
+        usr_req_keys = ["chng_lut_file", "chng_score_lut", "chng_uid_lut", "tmp_path", "out_vec_path"]
         EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWChangeFnl', req_keys=usr_req_keys)
 
     def perform_analysis(self, scn_db_obj, sen_obj):
@@ -107,7 +110,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                     if not os.path.exists(base_tmp_dir):
                         os.mkdir(base_tmp_dir)
 
-                    clr_sky_vec_file = os.path.join(base_tmp_dir, "{}_clearsky_vec.geojson")
+                    clr_sky_vec_file = os.path.join(base_tmp_dir, "{}_clearsky_vec.geojson".format(basename))
                     rsgislib.vectorutils.polygoniseRaster2VecLyr(clr_sky_vec_file, 'clrsky', 'GEOJSON', clearsky_img_file,
                                                                  imgBandNo=1, maskImg=clearsky_img_file, imgMaskBandNo=1,
                                                                  replace_file=True, replace_lyr=True,
@@ -192,14 +195,15 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 rsgislib.imagecalc.bandMath(scr_tile, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, True)
                                 rsgislib.imageutils.popImageStats(scr_tile, usenodataval=True, nodataval=0, calcpyramids=True)
 
-
                                 # Update the UID image
                                 acq_date = scn_db_obj.Date_Acquired
                                 year_obs = acq_date.year
                                 day_year_obs = acq_date.timetuple().tm_yday
-                                update_uid_image(scr_tile, uid_tile, gmw_tile_chng_img, year_obs, day_year_obs)
+                                update_uid_image(scr_tile, uid_tile, gmw_tile_chng_img, gmw_tile_clrsky_img, year_obs, day_year_obs)
+                                rsgislib.imageutils.popImageStats(uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
 
-
+                                # Clump to create UIDs
+                                
 
                             else:
                                 logger.debug("There are no change pixels within the tile skipping.")
