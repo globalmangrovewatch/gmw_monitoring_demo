@@ -4,8 +4,10 @@ import rsgislib
 import rsgislib.vectorutils
 import rsgislib.imagecalc
 import rsgislib.rastergis
+import rsgislib.rastergis.ratutils
 import rsgislib.imageutils.imagelut
 import rsgislib.imageutils
+import rsgislib.segmentation
 
 import logging
 import os
@@ -28,7 +30,7 @@ def delete_vector_file(vec_file, feedback=True):
             print("Deleting: {}".format(cfile))
         os.remove(cfile)
 
-def update_uid_image(score_img, uid_img, chng_img, clrsky_img, year_obs, day_year_obs):
+def update_uid_image(uid_img, chng_img, clrsky_img, year_obs, day_year_obs, tmp_uid_tile):
     from rios import applier
     try:
         import tqdm
@@ -38,12 +40,11 @@ def update_uid_image(score_img, uid_img, chng_img, clrsky_img, year_obs, day_yea
         progress_bar = cuiprogress.GDALProgressBar()
 
     infiles = applier.FilenameAssociations()
-    infiles.score_img = score_img
     infiles.uid_img = uid_img
     infiles.chng_img = chng_img
     infiles.clrsky_img = clrsky_img
     outfiles = applier.FilenameAssociations()
-    outfiles.uid_img = uid_img
+    outfiles.uid_img_out = tmp_uid_tile
     otherargs = applier.OtherInputs()
     otherargs.year_obs = year_obs
     otherargs.day_year_obs = day_year_obs
@@ -67,7 +68,7 @@ def update_uid_image(score_img, uid_img, chng_img, clrsky_img, year_obs, day_yea
         uid_img_arr[2, inputs.clrsky_img[0]==1] = otherargs.year_obs
         uid_img_arr[3, inputs.clrsky_img[0]==1] = otherargs.day_year_obs
 
-        outputs.uid_img = uid_img_arr
+        outputs.uid_img_out = uid_img_arr
 
     applier.apply(_update_uid_img, infiles, outfiles, otherargs, controls=aControls)
 
@@ -148,7 +149,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                     if len(score_tiles) > 0:
                         for scr_tile in score_tiles:
                             print(scr_tile)
-                            tile_basename = rsgis_utils.get_file_basename(scr_tile).replace("_chng_scr", "")
+                            tile_basename = rsgis_utils.get_file_basename(scr_tile).replace("_chng_scr", "").replace("gmw_", "")
                             print(tile_basename)
                             uid_tile = None
                             for uid_tile_tmp in uid_tiles:
@@ -191,7 +192,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 band_defs = [rsgislib.imagecalc.BandDefn('score', scr_tile, 1),
                                              rsgislib.imagecalc.BandDefn('clrsky', gmw_tile_clrsky_img, 1),
                                              rsgislib.imagecalc.BandDefn('chng', gmw_tile_chng_img, 1)]
-                                exp = '(chng==1)&&(score<5)?score+2:(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
+                                exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
                                 rsgislib.imagecalc.bandMath(scr_tile, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, True)
                                 rsgislib.imageutils.popImageStats(scr_tile, usenodataval=True, nodataval=0, calcpyramids=True)
 
@@ -199,15 +200,72 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 acq_date = scn_db_obj.Date_Acquired
                                 year_obs = acq_date.year
                                 day_year_obs = acq_date.timetuple().tm_yday
-                                update_uid_image(scr_tile, uid_tile, gmw_tile_chng_img, gmw_tile_clrsky_img, year_obs, day_year_obs)
-                                rsgislib.imageutils.popImageStats(uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
+                                tmp_uid_tile = os.path.join(base_tmp_dir, "{}_{}_tmp_uid_tile.kea".format(basename, tile_basename))
+                                update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_clrsky_img, year_obs, day_year_obs, tmp_uid_tile)
+                                rsgislib.imageutils.popImageStats(tmp_uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
+
+                                # Overwrite the UID image.
+                                rsgislib.imageutils.gdal_translate(tmp_uid_tile, uid_tile, 'KEA')
+                                rsgislib.imageutils.popImageStats(tmp_uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
 
                                 # Clump to create UIDs
-                                
+                                tile_clumps = os.path.join(base_tmp_dir,"{}_{}_clumps.kea".format(basename, tile_basename))
+                                rsgislib.segmentation.unionOfClumps(tile_clumps, 'KEA', [scr_tile, tmp_uid_tile], 0, False)
+                                rsgislib.rastergis.populateStats(tile_clumps, addclrtab=True, calcpyramids=True, ignorezero=True)
+
+                                # Masked UID clumps
+                                tile_mskd_clumps = os.path.join(base_tmp_dir, "{}_{}_clumps_mskd.kea".format(basename, tile_basename))
+                                band_defs = [rsgislib.imagecalc.BandDefn('score', scr_tile, 1),
+                                             rsgislib.imagecalc.BandDefn('clumps', tile_clumps, 1)]
+                                exp = 'score>0?clumps:0'
+                                rsgislib.imagecalc.bandMath(tile_mskd_clumps, exp, 'KEA', rsgislib.TYPE_32UINT, band_defs, False, False)
+                                rsgislib.rastergis.populateStats(tile_mskd_clumps, addclrtab=True, calcpyramids=True, ignorezero=True)
+
+                                tile_mskd_relbl_clumps = os.path.join(base_tmp_dir, "{}_{}_clumps_mskd_relbl.kea".format(basename, tile_basename))
+                                rsgislib.segmentation.relabelClumps(tile_mskd_clumps, tile_mskd_relbl_clumps, 'KEA', False)
+                                rsgislib.rastergis.populateStats(tile_mskd_relbl_clumps, addclrtab=True, calcpyramids=True, ignorezero=True)
+
+                                # Check there are
+                                chng_hist = rsgislib.rastergis.ratutils.getColumnData(tile_mskd_relbl_clumps, "Histogram")
+                                if chng_hist.shape[0] > 1:
+                                    # Populate clumps with attribute info.
+                                    bs = []
+                                    bs.append(rsgislib.rastergis.BandAttStats(band=1, meanField='FirstObsYear'))
+                                    bs.append(rsgislib.rastergis.BandAttStats(band=2, meanField='FirstObsDay'))
+                                    bs.append(rsgislib.rastergis.BandAttStats(band=3, meanField='LastObsYear'))
+                                    bs.append(rsgislib.rastergis.BandAttStats(band=4, meanField='LastObsDay'))
+                                    rsgislib.rastergis.populateRATWithStats(tmp_uid_tile, tile_mskd_relbl_clumps, bs)
+
+                                    # Populate clumps with attribute info.
+                                    bs = []
+                                    bs.append(rsgislib.rastergis.BandAttStats(band=1, meanField='Score'))
+                                    rsgislib.rastergis.populateRATWithStats(scr_tile, tile_mskd_relbl_clumps, bs)
+
+                                    obs_date_str = acq_date.strftime("%Y%m%d")
+                                    out_dir = os.path.join(self.params["out_vec_path"], "{}_{}".format(obs_date_str, basename))
+                                    if not os.path.exists(out_dir):
+                                        os.mkdir(out_dir)
+
+                                    out_tile_vec_file = os.path.join(out_dir, "{}_{}_chngs.gpkg".format(obs_date_str, basename))
+                                    rsgislib.vectorutils.polygoniseRaster2VecLyr(out_tile_vec_file, tile_basename, 'GPKG',
+                                                                                 tile_mskd_relbl_clumps, imgBandNo=1,
+                                                                                 maskImg=tile_mskd_relbl_clumps,
+                                                                                 imgMaskBandNo=1, replace_file=False,
+                                                                                 replace_lyr=True,
+                                                                                 pxl_val_fieldname='ratfid')
+
+                                    rsgislib.vectorutils.copyRATCols2VectorLyr(out_tile_vec_file, tile_basename, 'ratfid',
+                                                                               tile_mskd_relbl_clumps,
+                                                                                ["FirstObsYear", "FirstObsDay",
+                                                                                 "LastObsYear", "LastObsDay",
+                                                                                 "Score"],
+                                                                               outcolnames=None, outcoltypes=None)
 
                             else:
                                 logger.debug("There are no change pixels within the tile skipping.")
                                 success = True
+
+
                     else:
                         logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Landsat PID: {}".format(scn_db_obj.PID))
                         success = True
