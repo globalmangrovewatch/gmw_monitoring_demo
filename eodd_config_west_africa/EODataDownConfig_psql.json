@@ -1,0 +1,29 @@
+{
+    "eodatadown":
+    {
+        "details":
+        {
+            "name":"Test User Analysis",
+            "description":"System to test user plugins for analysis."
+        },
+        "database":
+        {
+            "connection_file":"/home/a.pfb/eodd_gmw_info/db_wa_connect_info"
+        },
+        "sensors":
+        {
+            "LandsatGOOG":
+            {
+                "config":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_west_africa/LandsatGoog.json"
+            },
+            "Sentinel2GOOG":
+            {
+                "config":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_west_africa/Sentinel2Goog.json"
+            },
+            "Sentinel1ASF":
+            {
+                "config":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_west_africa/Sentinel1ASF.json"
+            }
+        }
+    }
+}
