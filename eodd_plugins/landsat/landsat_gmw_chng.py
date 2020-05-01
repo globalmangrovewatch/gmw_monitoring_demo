@@ -265,6 +265,11 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                                                                  "Score"],
                                                                                outcolnames=None, outcoltypes=None)
 
+                                    if out_dict is None:
+                                        out_dict = dict()
+                                    out_dict['out_vec'] = out_tile_vec_file
+                                    out_dict['out_vec_luts'] = list()
+
                                     # Update (create) the JSON LUT file.
                                     lut_file_name = "gmw_{}_lut.json".format(tile_basename)
                                     lut_file_path = os.path.join(self.params["chng_vec_luts"], lut_file_name)
@@ -280,19 +285,18 @@ class LandsatGMWChange(EODataDownUserAnalysis):
 
                                     rsgis_utils.writeDict2JSON(lut_dict, lut_file_path)
                                     eodd_utils.release_file_lock(lut_file_path)
+                                    out_dict['out_vec_luts'].append(lut_file_path)
                             else:
                                 logger.debug("There are no change pixels within the tile skipping.")
                                 success = True
-
 
                     else:
                         logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Landsat PID: {}".format(scn_db_obj.PID))
                         success = True
 
-
                     # Remove the tmp directory to clean up...
-                    # if os.path.exists(base_tmp_dir):
-                    #    shutil.rmtree(base_tmp_dir)
+                    if os.path.exists(base_tmp_dir):
+                        shutil.rmtree(base_tmp_dir)
 
                 else:
                     logger.debug("No scene change vector was available so assume there were no change features.")
@@ -306,7 +310,6 @@ class LandsatGMWChange(EODataDownUserAnalysis):
             logger.exception(e)
             success = False
 
-        success = False
         return success, out_dict
 
 
