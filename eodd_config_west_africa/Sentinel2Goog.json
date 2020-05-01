@@ -15,6 +15,7 @@
             "ardparams":
             {
                 "dem":"/scratch/a.pfb/srtm_global_mosaic_1arc_v3.kea",
+                "lowres":true,
                 "roi":
                 {
                     "intersect":
