@@ -19,13 +19,18 @@
                 {
                     "intersect":
                     {
-                        "vec_file":"/bigdata/eodd_wales_ard/scripts/roi/wales_extent.geojson",
-                        "vec_layer":"wales_extent"
+                        "vec_file":"/scratch/a.pfb/gmw_monitoring/scripts/rois/refs/west_africa_roi.geojson",
+                        "vec_layer":"west_africa_roi"
                     },
                     "subset":
                     {
-                        "vec_file":"/bigdata/eodd_wales_ard/scripts/roi/wider_wales_extent.geojson",
-                        "vec_layer":"wider_wales_extent"
+                        "vec_file":"/scratch/a.pfb/gmw_monitoring/scripts/rois/refs/west_africa_roi.geojson",
+                        "vec_layer":"west_africa_roi"
+                    },
+                    "mask":
+                    {
+                        "vec_file":"/scratch/a.pfb/gmw_monitoring/scripts/rois/refs/west_africa_roi.geojson",
+                        "vec_layer":"west_africa_roi"
                     }
                 }
             },

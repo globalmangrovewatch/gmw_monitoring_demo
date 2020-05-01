@@ -14,7 +14,25 @@
             },
             "ardparams":
             {
-                "dem":"/scratch/a.pfb/srtm_global_mosaic_1arc_v3.kea"
+                "dem":"/scratch/a.pfb/srtm_global_mosaic_1arc_v3.kea",
+                "roi":
+                {
+                    "intersect":
+                    {
+                        "vec_file":"/scratch/a.pfb/gmw_monitoring/scripts/rois/refs/west_africa_roi.geojson",
+                        "vec_layer":"west_africa_roi"
+                    },
+                    "subset":
+                    {
+                        "vec_file":"/scratch/a.pfb/gmw_monitoring/scripts/rois/refs/west_africa_roi.geojson",
+                        "vec_layer":"west_africa_roi"
+                    },
+                    "mask":
+                    {
+                        "vec_file":"/scratch/a.pfb/gmw_monitoring/scripts/rois/refs/west_africa_roi.geojson",
+                        "vec_layer":"west_africa_roi"
+                    }
+                }
             },
             "download":
             {
