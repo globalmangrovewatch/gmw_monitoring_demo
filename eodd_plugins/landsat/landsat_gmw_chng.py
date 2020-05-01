@@ -267,8 +267,9 @@ class LandsatGMWChange(EODataDownUserAnalysis):
 
                                     if out_dict is None:
                                         out_dict = dict()
-                                    out_dict['out_vec'] = out_tile_vec_file
-                                    out_dict['out_vec_luts'] = list()
+                                        out_dict['out_chng_vec'] = list()
+                                        out_dict['out_vec_luts'] = list()
+                                    out_dict['out_chng_vec'].append(out_tile_vec_file)
 
                                     # Update (create) the JSON LUT file.
                                     lut_file_name = "gmw_{}_lut.json".format(tile_basename)
