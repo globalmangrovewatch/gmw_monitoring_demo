@@ -24,10 +24,10 @@ class ProcessSRTMTile(PBPTProcessTool):
         srtm_kea_file = os.path.join(tmp_dir, "{}.kea".format(basename))
         rsgislib.imageutils.gdal_translate(srtm_file, srtm_kea_file, 'KEA')
 
-        rsgislib.imagecalc.imageMath(srtm_kea_file, out_min0_img, 'b1<0:0:b1', 'KEA', rsgislib.TYPE_32INT, False, False)
+        rsgislib.imagecalc.imageMath(srtm_kea_file, out_min0_img, 'b1<0?0:b1', 'KEA', rsgislib.TYPE_32INT, False, False)
         rsgislib.imageutils.popImageStats(out_min0_img, usenodataval=True, nodataval=0, calcpyramids=True)
 
-        rsgislib.imagecalc.imageMath(srtm_kea_file, out_min1_img, 'b1<1:1:b1', 'KEA', rsgislib.TYPE_32INT, False, False)
+        rsgislib.imagecalc.imageMath(srtm_kea_file, out_min1_img, 'b1<1?1:b1', 'KEA', rsgislib.TYPE_32INT, False, False)
         rsgislib.imageutils.popImageStats(out_min1_img, usenodataval=True, nodataval=1, calcpyramids=True)
 
     def required_fields(self, **kwargs):
