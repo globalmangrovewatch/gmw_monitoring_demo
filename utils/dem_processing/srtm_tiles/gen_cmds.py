@@ -35,6 +35,7 @@ class CreateSRTMTileCmds(PBPTGenProcessToolCmds):
         self.write_cmd_files()
         self.create_slurm_sub_sh(jobname='srtm_processing',
                                  mem_per_core_mb=8192,
+                                 account_name='scw1376',
                                  log_dirs='/scratch/a.pfb/SRTM/logs',
                                  prepend='singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/au-eoed-dev.sif ')
 
