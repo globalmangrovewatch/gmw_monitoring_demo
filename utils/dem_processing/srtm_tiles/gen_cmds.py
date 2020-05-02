@@ -12,7 +12,7 @@ class CreateSRTMTileCmds(PBPTGenProcessToolCmds):
         srtm_files = glob.glob(os.path.join(kwargs['srtm_dir'], "*.zip"))
         for srtm_file in srtm_files:
             print(srtm_file)
-            file_name, dir = os.path.split(srtm_file)
+            dir_path, file_name = os.path.split(srtm_file)
             basename = file_name.replace(".zip", "").replace(".", "_").lower()
             c_dict = dict()
             c_dict['srtm_zip'] = srtm_file
