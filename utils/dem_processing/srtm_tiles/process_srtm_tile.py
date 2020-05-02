@@ -11,11 +11,15 @@ logger = logging.getLogger(__name__)
 
 def unzip_file(zip_file, out_dir):
     zip_file = os.path.abspath(zip_file)
+    out_dir = os.path.abspath(out_dir)
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
+    c_pwd = os.getcwd()
     os.chdir(out_dir)
     cmd = "unzip '{}'".format(zip_file)
+    logger.info("Running '{}' output directory: '{}'".format(cmd, out_dir))
     subprocess.call(cmd, shell=True)
+    os.chdir(c_pwd)
 
 
 class ProcessSRTMTile(PBPTProcessTool):
