@@ -8,20 +8,6 @@ import rsgislib.imagecalc
 
 logger = logging.getLogger(__name__)
 
-
-def unzip_file(zip_file, out_dir):
-    zip_file = os.path.abspath(zip_file)
-    out_dir = os.path.abspath(out_dir)
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-    c_pwd = os.getcwd()
-    os.chdir(out_dir)
-    cmd = "unzip '{}'".format(zip_file)
-    logger.info("Running '{}' output directory: '{}'".format(cmd, out_dir))
-    subprocess.call(cmd, shell=True)
-    os.chdir(c_pwd)
-
-
 class ProcessSRTMTile(PBPTProcessTool):
 
     def __init__(self):
@@ -29,15 +15,11 @@ class ProcessSRTMTile(PBPTProcessTool):
 
     def do_processing(self, **kwargs):
         rsgis_utils = rsgislib.RSGISPyUtils()
-        srtm_zip_file = self.params['srtm_zip']
+        srtm_file = self.params['srtm_file']
         tmp_dir = self.params['tmp_dir']
         basename = self.params['basename']
         out_min1_img = self.params['out_min1_img']
         out_min0_img = self.params['out_min0_img']
-
-        unzip_file(srtm_zip_file, tmp_dir)
-
-        srtm_file = rsgis_utils.findFile(tmp_dir, "*.hgt")
 
         srtm_kea_file = os.path.join(tmp_dir, "{}.kea".format(basename))
         rsgislib.imageutils.gdal_translate(srtm_file, srtm_kea_file, 'KEA')
@@ -49,7 +31,7 @@ class ProcessSRTMTile(PBPTProcessTool):
         rsgislib.imageutils.popImageStats(out_min1_img, usenodataval=True, nodataval=1, calcpyramids=True)
 
     def required_fields(self, **kwargs):
-        return ["srtm_zip",
+        return ["srtm_file",
                 "tmp_dir",
                 "out_min1_img",
                 "out_min0_img",

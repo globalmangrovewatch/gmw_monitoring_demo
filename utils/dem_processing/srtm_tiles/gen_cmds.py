@@ -9,13 +9,13 @@ logger = logging.getLogger(__name__)
 class CreateSRTMTileCmds(PBPTGenProcessToolCmds):
 
     def gen_command_info(self, **kwargs):
-        srtm_files = glob.glob(os.path.join(kwargs['srtm_dir'], "*.zip"))
+        srtm_files = glob.glob(os.path.join(kwargs['srtm_dir'], "*.hgt"))
         for srtm_file in srtm_files:
             print(srtm_file)
             dir_path, file_name = os.path.split(srtm_file)
-            basename = file_name.replace(".zip", "").replace(".", "_").lower()
+            basename = file_name.replace(".hgt", "").replace(".", "_").lower()
             c_dict = dict()
-            c_dict['srtm_zip'] = srtm_file
+            c_dict['srtm_file'] = srtm_file
             tmp_dir = os.path.join(kwargs['tmp_dir'], basename)
             if not os.path.exists(tmp_dir):
                 os.mkdir(tmp_dir)
@@ -27,7 +27,7 @@ class CreateSRTMTileCmds(PBPTGenProcessToolCmds):
             self.params.append(c_dict)
 
     def run_gen_commands(self):
-        self.gen_command_info(srtm_dir='/scratch/a.pfb/SRTM/RAW',
+        self.gen_command_info(srtm_dir='/scratch/a.pfb/SRTM/extracted',
                               tmp_dir='/scratch/a.pfb/SRTM/tmp',
                               out_min1_dir='/scratch/a.pfb/SRTM/min_val_1_tiles',
                               out_min0_dir = '/scratch/a.pfb/SRTM/min_val_0_tiles'
