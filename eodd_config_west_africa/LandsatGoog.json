@@ -348,6 +348,14 @@
                 "collection":["T1"],
                 "startdate":"2019-01-01"
             },
+            "validity":
+            {
+                "scn_intersect":
+                {
+                    "vec_file":"/scratch/a.pfb/gmw_monitoring/GMW_Mangrove_Habitat_v2.gpkg",
+                    "vec_lyr":"habitat"
+                }
+            },
             "googleinfo":
             {
                 "projectname":"globalmangrovewatch-164501",

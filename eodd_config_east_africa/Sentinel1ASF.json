@@ -426,6 +426,14 @@
                 "geoboundsrelation":"intersects",
                 "startdate":"2019-01-01"
             },
+            "validity":
+            {
+                "scn_intersect":
+                {
+                    "vec_file":"/scratch/a.pfb/gmw_monitoring/GMW_Mangrove_Habitat_v2.gpkg",
+                    "vec_lyr":"habitat"
+                }
+            },
             "asfaccount":
             {
                 "usrpassfile":"/home/a.pfb/eodd_gmw_info/asf_sen1_acc_details"

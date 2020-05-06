@@ -156,10 +156,33 @@
                 "cloudcover":20,
                 "startdate":"2019-10-01"
             },
+            "validity":
+            {
+                "scn_intersect":
+                {
+                    "vec_file":"/scratch/a.pfb/gmw_monitoring/GMW_Mangrove_Habitat_v2.gpkg",
+                    "vec_lyr":"habitat"
+                }
+            },
             "googleinfo":
             {
                 "projectname":"globalmangrovewatch-164501",
                 "googlejsonkey":"/home/a.pfb/eodd_gmw_info/GlobalMangroveWatch-74b58b05fd73.json"
+            },
+            "plugins":
+            {
+              "analysis":
+              [
+                {
+                  "path": "/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins/sen2",
+                  "module": "sentinel2_clearsky",
+                  "class": "Sentinel2ClearSky",
+                  "params":
+                  {
+                    "tmp_path": "/scratch/a.pfb/gmw_monitoring/data/west_africa/sen2/plugin_tmp"
+                  }
+                }
+              ]
             }
         }
     }
