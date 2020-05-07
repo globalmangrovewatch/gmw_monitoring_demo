@@ -6,11 +6,11 @@
             "name":"LandsatGOOG",
             "paths":
             {
-                "download":"/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/downloads",
-                "ardwork":"/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/ard_work",
-                "ardfinal":"/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/ard",
-                "ardtmp":"/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/tmp",
-                "quicklooks":"/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/quicklook"
+                "download":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/downloads",
+                "ardwork":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/ard_work",
+                "ardfinal":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/ard",
+                "ardtmp":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/tmp",
+                "quicklooks":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/quicklook"
             },
             "ardparams":
             {
@@ -372,45 +372,7 @@
                         "class": "LandsatClearSky",
                         "params":
                         {
-                            "tmp_path": "/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/plugin_tmp"
-                        }
-                    },
-                    {
-                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins/landsat",
-                        "module":"landsat_gmw_scn_change",
-                        "class":"LandsatGMWSceneChange",
-                        "params":
-                        {
-                            "gmw_vec_file":"/scratch/a.pfb/gmw_monitoring/GMW_MangroveExtent_WGS84_v2.0.gpkg",
-                            "gmw_vec_lyr":"gmw2016v2.0",
-                            "out_vec_path":"/Users/pete/Temp/eodd_user_analysis/vec_outs",
-                            "tmp_path":"/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/plugin_tmp"
-                        }
-                    },
-                    {
-                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins/landsat",
-                        "module":"landsat_gmw_chng",
-                        "class":"LandsatGMWChange",
-                        "params":
-                        {
-                            "chng_lut_file":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_monitor_lut.gpkg",
-                            "chng_score_lut":"score_imgs",
-                            "chng_uid_lut":"uid_imgs",
-                            "tmp_path":"/scratch/a.pfb/gmw_monitoring/data/east_africa/landsat/plugin_tmp",
-                            "out_vec_path":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_tiles",
-                            "chng_vec_luts":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_tile_lut"
-                        }
-                    },
-                    {
-                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins",
-                        "module":"gmw_upload_chng_outs",
-                        "class":"UploadGMWChange",
-                        "params":
-                        {
-                            "goog_cred":"/home/a.pfb/eodd_gmw_info/GlobalMangroveWatch-74b58b05fd73.json",
-                            "bucket_name":"gmw_chng_feats_test_1234",
-                            "bucket_vec_dir":"pjb_test_east_africa/vec_files",
-                            "bucket_lut_dir":"pjb_test_east_africa/lut_files"
+                            "tmp_path": "/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/plugin_tmp"
                         }
                     }
                 ]
