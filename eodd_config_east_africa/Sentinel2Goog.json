@@ -126,7 +126,7 @@
             {
                 "scn_intersect":
                 {
-                    "vec_file":"/scratch/a.pfb/gmw_monitoring/GMW_Mangrove_Habitat_v2.gpkg",
+                    "vec_file":"/scratch/a.pfb/gmw_monitoring/data/GMW_Mangrove_Habitat_v2.gpkg",
                     "vec_lyr":"habitat"
                 }
             },
