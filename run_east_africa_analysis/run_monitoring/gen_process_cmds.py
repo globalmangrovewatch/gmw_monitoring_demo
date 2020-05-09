@@ -25,7 +25,7 @@ class CreateEODataDownCmds(PBPTGenProcessToolCmds):
                                  n_cores_per_job=10, n_jobs=10,
                                  log_dirs='/scratch/a.pfb/gmw_monitoring/logs',
                                  prepend='singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/au-eoed-py-dev.sif ',
-                                 module_load='module load parallel singularity\n\nexport http_proxy="http://a.pfb:proxy101019@10.212.63.246:3128\nexport https_proxy="http://a.pfb:proxy101019@10.212.63.246:3128"\n')
+                                 module_load='module load parallel singularity\n\nexport http_proxy="http://a.pfb:proxy101019@10.212.63.246:3128"\nexport https_proxy="http://a.pfb:proxy101019@10.212.63.246:3128"\n')
 
     def run_check_outputs(self):
         process_tools_mod = 'exe_scn_processing'
