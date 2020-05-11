@@ -168,7 +168,7 @@
             {
                 "projectname":"globalmangrovewatch-164501",
                 "googlejsonkey":"/home/a.pfb/eodd_gmw_info/GlobalMangroveWatch-74b58b05fd73.json",
-                "downloadtool":"GSUTIL"
+                "downloadtool":"PYAPI"
             },
             "plugins":
             {
