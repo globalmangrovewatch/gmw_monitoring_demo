@@ -113,9 +113,10 @@ class Sentinel1GMWSceneChange(EODataDownUserAnalysis):
 
                     # Threshold the NDVI within GMW area.
                     gmw_chng_img = os.path.join(base_tmp_dir, "{}_chng_gmw.kea".format(basename))
-                    band_defs = [rsgislib.imagecalc.BandDefn('dbimg', img_file, 1),
+                    band_defs = [rsgislib.imagecalc.BandDefn('dbvv', img_file, 1),
+                                 rsgislib.imagecalc.BandDefn('dbvh', img_file, 2),
                                  rsgislib.imagecalc.BandDefn('gmw', gmw_msk_img, 1)]
-                    exp = '(gmw==1) && (dbimg<-25)?1:0'
+                    exp = '(gmw==1) && ((dbvv<-1800) || (dbvh<-2300))?1:0'
                     rsgislib.imagecalc.bandMath(gmw_chng_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs)
                     rsgislib.rastergis.populateStats(gmw_chng_img, addclrtab=True, calcpyramids=True, ignorezero=True)
 
