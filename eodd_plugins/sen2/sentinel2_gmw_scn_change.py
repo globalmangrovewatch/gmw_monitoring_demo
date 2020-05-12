@@ -118,10 +118,7 @@ class Sentinel2GMWSceneChange(EODataDownUserAnalysis):
 
                     # Calculate NDVI
                     rBand = 3
-                    nBand = 4
-                    if "LS8" in basename:
-                        rBand = 4
-                        nBand = 5
+                    nBand = 7
                     ndvi_img = os.path.join(base_tmp_dir, "{}_ndvi.kea".format(basename))
                     rsgislib.imagecalc.calcindices.calcNDVI(img_file, rBand, nBand, ndvi_img, stats=False, gdalformat='KEA')
 
@@ -129,7 +126,7 @@ class Sentinel2GMWSceneChange(EODataDownUserAnalysis):
                     gmw_chng_img = os.path.join(base_tmp_dir, "{}_chng_gmw.kea".format(basename))
                     band_defs = [rsgislib.imagecalc.BandDefn('ndvi', ndvi_img, 1),
                                  rsgislib.imagecalc.BandDefn('gmw', gmw_msk_img, 1)]
-                    exp = '(gmw==1) && (ndvi<0.4)?1:0'
+                    exp = '(gmw==1) && (ndvi<0.2)?1:0'
                     rsgislib.imagecalc.bandMath(gmw_chng_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs)
                     rsgislib.rastergis.populateStats(gmw_chng_img, addclrtab=True, calcpyramids=True, ignorezero=True)
 

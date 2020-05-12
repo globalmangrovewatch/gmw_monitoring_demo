@@ -201,7 +201,7 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                 eodd_utils.release_file_lock(scr_tile)
 
                                 # Update the UID image
-                                acq_date = scn_db_obj.Date_Acquired
+                                acq_date = scn_db_obj.Sensing_Time
                                 year_obs = acq_date.year
                                 day_year_obs = acq_date.timetuple().tm_yday
                                 tmp_uid_tile = os.path.join(base_tmp_dir, "{}_{}_tmp_uid_tile.kea".format(basename, tile_basename))
@@ -248,6 +248,7 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                     rsgislib.rastergis.populateRATWithStats(scr_tile, tile_mskd_relbl_clumps, bs)
 
                                     obs_date_str = acq_date.strftime("%Y%m%d")
+                                    obs_date_iso_str = acq_date.isoformat()
 
                                     out_tile_vec_file_name = "{}_{}_chngs.gpkg".format(obs_date_str, basename)
                                     out_tile_vec_file = os.path.join(self.params["out_vec_path"], out_tile_vec_file_name)
@@ -280,9 +281,9 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                     else:
                                         lut_dict = dict()
 
-                                    lut_dict[obs_date_str] = dict()
-                                    lut_dict[obs_date_str]["file"] = out_tile_vec_file_name
-                                    lut_dict[obs_date_str]["layer"] = tile_basename
+                                    lut_dict[obs_date_iso_str] = dict()
+                                    lut_dict[obs_date_iso_str]["file"] = out_tile_vec_file_name
+                                    lut_dict[obs_date_iso_str]["layer"] = tile_basename
 
                                     rsgis_utils.writeDict2JSON(lut_dict, lut_file_path)
                                     eodd_utils.release_file_lock(lut_file_path)

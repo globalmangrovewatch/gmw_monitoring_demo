@@ -115,7 +115,7 @@ class Sentinel1GMWSceneChange(EODataDownUserAnalysis):
                     gmw_chng_img = os.path.join(base_tmp_dir, "{}_chng_gmw.kea".format(basename))
                     band_defs = [rsgislib.imagecalc.BandDefn('dbimg', img_file, 1),
                                  rsgislib.imagecalc.BandDefn('gmw', gmw_msk_img, 1)]
-                    exp = '(gmw==1) && (dbimg<-20)?1:0'
+                    exp = '(gmw==1) && (dbimg<-25)?1:0'
                     rsgislib.imagecalc.bandMath(gmw_chng_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs)
                     rsgislib.rastergis.populateStats(gmw_chng_img, addclrtab=True, calcpyramids=True, ignorezero=True)
 
