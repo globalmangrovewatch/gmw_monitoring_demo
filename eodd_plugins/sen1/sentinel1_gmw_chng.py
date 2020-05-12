@@ -132,14 +132,14 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
                     valid_wgs84_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec_wgs84.geojson".format(basename))
                     if os.path.exists(valid_wgs84_vec_file):
                         delete_vector_file(valid_wgs84_vec_file)
-                    cmd = "ogr2ogr -f GEOJSON -nln valid -t_srs EPSG:4326 {} {} vld".format(valid_wgs84_vec_file, valid_vec_file)
+                    cmd = "ogr2ogr -f GEOJSON -nln vld -t_srs EPSG:4326 {} {} vld".format(valid_wgs84_vec_file, valid_vec_file)
                     logger.debug("Going to run command: '{}'".format(cmd))
                     try:
                         subprocess.check_call(cmd, shell=True)
                     except OSError as e:
                         raise Exception('Failed to run command: ' + cmd)
 
-                    lyr_bbox = rsgis_utils.getVecLayerExtent(valid_wgs84_vec_file, 'valid')
+                    lyr_bbox = rsgis_utils.getVecLayerExtent(valid_wgs84_vec_file, 'vld')
                     print(lyr_bbox)
 
                     score_tiles = rsgislib.imageutils.imagelut.query_img_lut(lyr_bbox, self.params["chng_lut_file"], self.params["chng_score_lut"])
@@ -175,7 +175,7 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
 
 
                             gmw_tile_vld_img = os.path.join(base_tmp_dir,"{}_{}_vld_feats.kea".format(basename, tile_basename))
-                            rsgislib.vectorutils.rasteriseVecLyr(valid_wgs84_vec_file, 'valid', scr_tile,
+                            rsgislib.vectorutils.rasteriseVecLyr(valid_wgs84_vec_file, 'vld', scr_tile,
                                                                  gmw_tile_vld_img, gdalformat="KEA", burnVal=1)
                             rsgislib.rastergis.populateStats(gmw_tile_vld_img, addclrtab=True, calcpyramids=True,
                                                              ignorezero=True)
@@ -201,7 +201,7 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
                                 eodd_utils.release_file_lock(scr_tile)
 
                                 # Update the UID image
-                                acq_date = scn_db_obj.Date_Acquired
+                                acq_date = scn_db_obj.Acquisition_Date
                                 year_obs = acq_date.year
                                 day_year_obs = acq_date.timetuple().tm_yday
                                 tmp_uid_tile = os.path.join(base_tmp_dir, "{}_{}_tmp_uid_tile.kea".format(basename, tile_basename))
