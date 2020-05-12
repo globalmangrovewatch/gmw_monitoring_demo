@@ -109,12 +109,12 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
                     basename = basename.replace('_chng_gmw_vec', '')
                     logger.debug("The basename for the processing is: {}".format(basename))
 
-                    base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_{}_gmw_chng".format(scn_db_obj.Product_ID, scn_db_obj.PID))
+                    base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_{}_gmw_chng".format(scn_db_obj.Product_File_ID, scn_db_obj.PID))
                     if not os.path.exists(base_tmp_dir):
                         os.mkdir(base_tmp_dir)
 
                     valid_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec.geojson".format(basename))
-                    rsgislib.vectorutils.polygoniseRaster2VecLyr(valid_img_file, 'vld', 'GEOJSON', valid_img_file,
+                    rsgislib.vectorutils.polygoniseRaster2VecLyr(valid_vec_file, 'vld', 'GEOJSON', valid_img_file,
                                                                  imgBandNo=1, maskImg=valid_img_file, imgMaskBandNo=1,
                                                                  replace_file=True, replace_lyr=True,
                                                                  pxl_val_fieldname='PXLVAL')
