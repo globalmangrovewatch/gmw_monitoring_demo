@@ -195,7 +195,7 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
                                 band_defs = [rsgislib.imagecalc.BandDefn('score', scr_tile, 1),
                                              rsgislib.imagecalc.BandDefn('vld', gmw_tile_vld_img, 1),
                                              rsgislib.imagecalc.BandDefn('chng', gmw_tile_chng_img, 1)]
-                                exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(vld==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
+                                exp = '(chng==1)&&(score<5)?(score+1)>5?5:(score+1):(vld==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
                                 rsgislib.imagecalc.bandMath(scr_tile, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, True)
                                 rsgislib.imageutils.popImageStats(scr_tile, usenodataval=True, nodataval=0, calcpyramids=True)
                                 eodd_utils.release_file_lock(scr_tile)
