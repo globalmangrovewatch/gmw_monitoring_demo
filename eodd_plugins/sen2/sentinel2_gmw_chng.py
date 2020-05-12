@@ -74,11 +74,11 @@ def update_uid_image(uid_img, chng_img, clrsky_img, year_obs, day_year_obs, tmp_
     applier.apply(_update_uid_img, infiles, outfiles, otherargs, controls=aControls)
 
 
-class LandsatGMWChange(EODataDownUserAnalysis):
+class Sentinel2GMWChange(EODataDownUserAnalysis):
 
     def __init__(self):
         usr_req_keys = ["chng_lut_file", "chng_score_lut", "chng_uid_lut", "tmp_path", "out_vec_path", "chng_vec_luts"]
-        EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWChangeFnl', req_keys=usr_req_keys)
+        EODataDownUserAnalysis.__init__(self, analysis_name='Sentinel2GMWChangeFnl', req_keys=usr_req_keys)
 
     def perform_analysis(self, scn_db_obj, sen_obj):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
@@ -89,8 +89,8 @@ class LandsatGMWChange(EODataDownUserAnalysis):
             eodd_utils = EODataDownUtils()
 
             scn_ext_info = scn_db_obj.ExtendedInfo
-            if 'LandsatGMWScnChange' in scn_ext_info:
-                scn_chng_info = scn_ext_info['LandsatGMWScnChange']
+            if 'Sentinel2GMWScnChange' in scn_ext_info:
+                scn_chng_info = scn_ext_info['Sentinel2GMWScnChange']
                 if 'chng_feats_vec' in scn_chng_info:
                     chng_feats_vec_file = scn_chng_info['chng_feats_vec']
                     logger.debug("Have change features vector file: {}".format(chng_feats_vec_file))
@@ -292,7 +292,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 success = True
 
                     else:
-                        logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Landsat PID: {}".format(scn_db_obj.PID))
+                        logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Sentinel-2 PID: {}".format(scn_db_obj.PID))
                         success = True
 
                     # Remove the tmp directory to clean up...

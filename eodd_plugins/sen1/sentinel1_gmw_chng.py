@@ -31,7 +31,7 @@ def delete_vector_file(vec_file, feedback=True):
             print("Deleting: {}".format(cfile))
         os.remove(cfile)
 
-def update_uid_image(uid_img, chng_img, clrsky_img, year_obs, day_year_obs, tmp_uid_tile):
+def update_uid_image(uid_img, chng_img, vld_img, year_obs, day_year_obs, tmp_uid_tile):
     from rios import applier
     try:
         import tqdm
@@ -43,7 +43,7 @@ def update_uid_image(uid_img, chng_img, clrsky_img, year_obs, day_year_obs, tmp_
     infiles = applier.FilenameAssociations()
     infiles.uid_img = uid_img
     infiles.chng_img = chng_img
-    infiles.clrsky_img = clrsky_img
+    infiles.vld_img = vld_img
     outfiles = applier.FilenameAssociations()
     outfiles.uid_img_out = tmp_uid_tile
     otherargs = applier.OtherInputs()
@@ -66,19 +66,19 @@ def update_uid_image(uid_img, chng_img, clrsky_img, year_obs, day_year_obs, tmp_
 
         uid_img_arr[0, new_chng_pxls==1] = otherargs.year_obs
         uid_img_arr[1, new_chng_pxls==1] = otherargs.day_year_obs
-        uid_img_arr[2, inputs.clrsky_img[0]==1] = otherargs.year_obs
-        uid_img_arr[3, inputs.clrsky_img[0]==1] = otherargs.day_year_obs
+        uid_img_arr[2, inputs.vld_img[0]==1] = otherargs.year_obs
+        uid_img_arr[3, inputs.vld_img[0]==1] = otherargs.day_year_obs
 
         outputs.uid_img_out = uid_img_arr
 
     applier.apply(_update_uid_img, infiles, outfiles, otherargs, controls=aControls)
 
 
-class LandsatGMWChange(EODataDownUserAnalysis):
+class Sentinel1GMWChange(EODataDownUserAnalysis):
 
     def __init__(self):
         usr_req_keys = ["chng_lut_file", "chng_score_lut", "chng_uid_lut", "tmp_path", "out_vec_path", "chng_vec_luts"]
-        EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWChangeFnl', req_keys=usr_req_keys)
+        EODataDownUserAnalysis.__init__(self, analysis_name='Sentinel1GMWChangeFnl', req_keys=usr_req_keys)
 
     def perform_analysis(self, scn_db_obj, sen_obj):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
@@ -89,8 +89,8 @@ class LandsatGMWChange(EODataDownUserAnalysis):
             eodd_utils = EODataDownUtils()
 
             scn_ext_info = scn_db_obj.ExtendedInfo
-            if 'LandsatGMWScnChange' in scn_ext_info:
-                scn_chng_info = scn_ext_info['LandsatGMWScnChange']
+            if 'Sentinel1GMWScnChange' in scn_ext_info:
+                scn_chng_info = scn_ext_info['Sentinel1GMWScnChange']
                 if 'chng_feats_vec' in scn_chng_info:
                     chng_feats_vec_file = scn_chng_info['chng_feats_vec']
                     logger.debug("Have change features vector file: {}".format(chng_feats_vec_file))
@@ -100,10 +100,10 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                     chng_feats_vec_lyr = chng_feats_vec_lyrs[0]
                     logger.debug("Have change features vector layer: {}".format(chng_feats_vec_lyr))
 
-                    clearsky_img_file = rsgis_utils.findFileNone(scn_db_obj.ARDProduct_Path, "*clearsky.tif")
-                    logger.debug("Clear Sky Mask File: {}".format(clearsky_img_file))
-                    if clearsky_img_file is None:
-                        raise Exception("The clear sky image is not available. The previous plugin probably failed.")
+                    valid_img_file = rsgis_utils.findFileNone(scn_db_obj.ARDProduct_Path, "*vmsk.tif")
+                    logger.debug("Valid Mask File: {}".format(valid_img_file))
+                    if valid_img_file is None:
+                        raise Exception("The valid image is not available. The previous plugin probably failed.")
 
                     basename = rsgis_utils.get_file_basename(chng_feats_vec_file)
                     basename = basename.replace('_chng_gmw_vec', '')
@@ -113,9 +113,9 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                     if not os.path.exists(base_tmp_dir):
                         os.mkdir(base_tmp_dir)
 
-                    clr_sky_vec_file = os.path.join(base_tmp_dir, "{}_clearsky_vec.geojson".format(basename))
-                    rsgislib.vectorutils.polygoniseRaster2VecLyr(clr_sky_vec_file, 'clrsky', 'GEOJSON', clearsky_img_file,
-                                                                 imgBandNo=1, maskImg=clearsky_img_file, imgMaskBandNo=1,
+                    valid_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec.geojson".format(basename))
+                    rsgislib.vectorutils.polygoniseRaster2VecLyr(valid_img_file, 'vld', 'GEOJSON', valid_img_file,
+                                                                 imgBandNo=1, maskImg=valid_img_file, imgMaskBandNo=1,
                                                                  replace_file=True, replace_lyr=True,
                                                                  pxl_val_fieldname='PXLVAL')
 
@@ -129,17 +129,17 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                     except OSError as e:
                         raise Exception('Failed to run command: ' + cmd)
 
-                    clr_sky_wgs84_vec_file = os.path.join(base_tmp_dir, "{}_clearsky_vec_wgs84.geojson".format(basename))
-                    if os.path.exists(clr_sky_wgs84_vec_file):
-                        delete_vector_file(clr_sky_wgs84_vec_file)
-                    cmd = "ogr2ogr -f GEOJSON -nln clrsky -t_srs EPSG:4326 {} {} clrsky".format(clr_sky_wgs84_vec_file, clr_sky_vec_file)
+                    valid_wgs84_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec_wgs84.geojson".format(basename))
+                    if os.path.exists(valid_wgs84_vec_file):
+                        delete_vector_file(valid_wgs84_vec_file)
+                    cmd = "ogr2ogr -f GEOJSON -nln valid -t_srs EPSG:4326 {} {} vld".format(valid_wgs84_vec_file, valid_vec_file)
                     logger.debug("Going to run command: '{}'".format(cmd))
                     try:
                         subprocess.check_call(cmd, shell=True)
                     except OSError as e:
                         raise Exception('Failed to run command: ' + cmd)
 
-                    lyr_bbox = rsgis_utils.getVecLayerExtent(clr_sky_wgs84_vec_file, 'clrsky')
+                    lyr_bbox = rsgis_utils.getVecLayerExtent(valid_wgs84_vec_file, 'valid')
                     print(lyr_bbox)
 
                     score_tiles = rsgislib.imageutils.imagelut.query_img_lut(lyr_bbox, self.params["chng_lut_file"], self.params["chng_score_lut"])
@@ -174,28 +174,28 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                             logger.debug("There are '{}' change pixels within the tile {}.".format(n_chng_pxls, tile_basename))
 
 
-                            gmw_tile_clrsky_img = os.path.join(base_tmp_dir,"{}_{}_clrsky_feats.kea".format(basename, tile_basename))
-                            rsgislib.vectorutils.rasteriseVecLyr(clr_sky_wgs84_vec_file, 'clrsky', scr_tile,
-                                                                 gmw_tile_clrsky_img, gdalformat="KEA", burnVal=1)
-                            rsgislib.rastergis.populateStats(gmw_tile_clrsky_img, addclrtab=True, calcpyramids=True,
+                            gmw_tile_vld_img = os.path.join(base_tmp_dir,"{}_{}_vld_feats.kea".format(basename, tile_basename))
+                            rsgislib.vectorutils.rasteriseVecLyr(valid_wgs84_vec_file, 'valid', scr_tile,
+                                                                 gmw_tile_vld_img, gdalformat="KEA", burnVal=1)
+                            rsgislib.rastergis.populateStats(gmw_tile_vld_img, addclrtab=True, calcpyramids=True,
                                                              ignorezero=True)
-                            clrsky_feat_pxl_counts = rsgislib.rastergis.ratutils.getColumnData(gmw_tile_clrsky_img,
+                            vld_feat_pxl_counts = rsgislib.rastergis.ratutils.getColumnData(gmw_tile_vld_img,
                                                                                              'Histogram')
-                            if clrsky_feat_pxl_counts.shape[0] > 1:
-                                n_clrcky_pxls = clrsky_feat_pxl_counts[1]
+                            if vld_feat_pxl_counts.shape[0] > 1:
+                                n_vld_pxls = vld_feat_pxl_counts[1]
                             else:
-                                n_clrcky_pxls = 0
-                            logger.debug("There are '{}' clear sky pixels within the tile {}.".format(n_clrcky_pxls, tile_basename))
+                                n_vld_pxls = 0
+                            logger.debug("There are '{}' valid pixels within the tile {}.".format(n_vld_pxls, tile_basename))
 
-                            if (n_clrcky_pxls > 0):
-                                logger.debug("There are clear sky pixels within the tile ({}) so continuing.".format(tile_basename))
+                            if (n_vld_pxls > 0):
+                                logger.debug("There are valid pixels within the tile ({}) so continuing.".format(tile_basename))
 
                                 eodd_utils.get_file_lock(scr_tile, sleep_period=1, wait_iters=120, use_except=True)
                                 # Increment the score
                                 band_defs = [rsgislib.imagecalc.BandDefn('score', scr_tile, 1),
-                                             rsgislib.imagecalc.BandDefn('clrsky', gmw_tile_clrsky_img, 1),
+                                             rsgislib.imagecalc.BandDefn('vld', gmw_tile_vld_img, 1),
                                              rsgislib.imagecalc.BandDefn('chng', gmw_tile_chng_img, 1)]
-                                exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
+                                exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(vld==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
                                 rsgislib.imagecalc.bandMath(scr_tile, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, True)
                                 rsgislib.imageutils.popImageStats(scr_tile, usenodataval=True, nodataval=0, calcpyramids=True)
                                 eodd_utils.release_file_lock(scr_tile)
@@ -205,7 +205,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 year_obs = acq_date.year
                                 day_year_obs = acq_date.timetuple().tm_yday
                                 tmp_uid_tile = os.path.join(base_tmp_dir, "{}_{}_tmp_uid_tile.kea".format(basename, tile_basename))
-                                update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_clrsky_img, year_obs, day_year_obs, tmp_uid_tile)
+                                update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_vld_img, year_obs, day_year_obs, tmp_uid_tile)
                                 rsgislib.imageutils.popImageStats(tmp_uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
 
                                 # Overwrite the UID image.
@@ -292,7 +292,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 success = True
 
                     else:
-                        logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Landsat PID: {}".format(scn_db_obj.PID))
+                        logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Sentinel-1 PID: {}".format(scn_db_obj.PID))
                         success = True
 
                     # Remove the tmp directory to clean up...

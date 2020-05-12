@@ -14,11 +14,11 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
-class LandsatGMWSceneChange(EODataDownUserAnalysis):
+class Sentinel1GMWSceneChange(EODataDownUserAnalysis):
     
     def __init__(self):
         usr_req_keys = ["gmw_vec_file", "gmw_vec_lyr", "out_vec_path", "tmp_path"]
-        EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWScnChange', req_keys=usr_req_keys)
+        EODataDownUserAnalysis.__init__(self, analysis_name='Sentinel1GMWScnChange', req_keys=usr_req_keys)
         
     def perform_analysis(self, scn_db_obj, sen_obj):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
@@ -28,29 +28,25 @@ class LandsatGMWSceneChange(EODataDownUserAnalysis):
             rsgis_utils = rsgislib.RSGISPyUtils()
 
             # Find the input image image.
-            img_file = rsgis_utils.findFileNone(scn_db_obj.ARDProduct_Path, "*vmsk_mclds_topshad_rad_srefdem_stdsref.tif")
+            img_file = rsgis_utils.findFileNone(scn_db_obj.ARDProduct_Path, "*dB.tif")
             logger.debug("Image File: {}".format(img_file))
 
             # Find the the valid image mask
-            valid_img_file = rsgis_utils.findFileNone(scn_db_obj.ARDProduct_Path, "*valid.tif")
+            valid_img_file = rsgis_utils.findFileNone(scn_db_obj.ARDProduct_Path, "*vmsk.tif")
             logger.debug("Valid Image File: {}".format(valid_img_file))
-
-            # Find the the cloud image mask
-            clearsky_img_file = rsgis_utils.findFileNone(scn_db_obj.ARDProduct_Path, "*clearsky.tif")
-            logger.debug("Clear Sky Mask File: {}".format(clearsky_img_file))
 
             # Create basename to be used throughout analysis
             basename = rsgis_utils.get_file_basename(valid_img_file)
-            basename = basename.replace('_valid', '')
+            basename = basename.replace('_vmsk', '')
             logger.debug("The basename for the processing is: {}".format(basename))
 
             # Create tmp directory
-            base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_{}_scn_chng".format(scn_db_obj.Product_ID, scn_db_obj.PID))
+            base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_{}_scn_chng".format(scn_db_obj.Product_File_ID, scn_db_obj.PID))
             if not os.path.exists(base_tmp_dir):
                 os.mkdir(base_tmp_dir)
 
             # Create output directory
-            out_dir = os.path.join(self.params["out_vec_path"], "{}_{}".format(scn_db_obj.Product_ID, scn_db_obj.PID))
+            out_dir = os.path.join(self.params["out_vec_path"], "{}_{}".format(scn_db_obj.Product_File_ID, scn_db_obj.PID))
             if not os.path.exists(out_dir):
                 os.mkdir(out_dir)
 
@@ -97,9 +93,8 @@ class LandsatGMWSceneChange(EODataDownUserAnalysis):
                 # Do band maths to limit the GMW extent to areas of valid data.
                 gmw_msk_img = os.path.join(base_tmp_dir, "{}_gmw.kea".format(basename))
                 band_defs = [rsgislib.imagecalc.BandDefn('valid', valid_img_file, 1),
-                             rsgislib.imagecalc.BandDefn('clrsky', clearsky_img_file, 1),
                              rsgislib.imagecalc.BandDefn('gmw', gmw_base_msk_img, 1)]
-                exp = '(gmw==1) && (valid==1) && (clrsky==1)?1:0'
+                exp = '(gmw==1) && (valid==1)?1:0'
                 rsgislib.imagecalc.bandMath(gmw_msk_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs)
                 rsgislib.rastergis.populateStats(gmw_msk_img, addclrtab=True, calcpyramids=True, ignorezero=True)
 
@@ -116,20 +111,11 @@ class LandsatGMWSceneChange(EODataDownUserAnalysis):
                     out_dict["gmw_scn_pxls"] = n_gmw_pxls
                     logger.debug("There are sufficient GMW pixels to continue analysis")
 
-                    # Calculate NDVI
-                    rBand = 3
-                    nBand = 4
-                    if "LS8" in basename:
-                        rBand = 4
-                        nBand = 5
-                    ndvi_img = os.path.join(base_tmp_dir, "{}_ndvi.kea".format(basename))
-                    rsgislib.imagecalc.calcindices.calcNDVI(img_file, rBand, nBand, ndvi_img, stats=False, gdalformat='KEA')
-
                     # Threshold the NDVI within GMW area.
                     gmw_chng_img = os.path.join(base_tmp_dir, "{}_chng_gmw.kea".format(basename))
-                    band_defs = [rsgislib.imagecalc.BandDefn('ndvi', ndvi_img, 1),
+                    band_defs = [rsgislib.imagecalc.BandDefn('dbimg', img_file, 1),
                                  rsgislib.imagecalc.BandDefn('gmw', gmw_msk_img, 1)]
-                    exp = '(gmw==1) && (ndvi<0.4)?1:0'
+                    exp = '(gmw==1) && (dbimg<-20)?1:0'
                     rsgislib.imagecalc.bandMath(gmw_chng_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs)
                     rsgislib.rastergis.populateStats(gmw_chng_img, addclrtab=True, calcpyramids=True, ignorezero=True)
 

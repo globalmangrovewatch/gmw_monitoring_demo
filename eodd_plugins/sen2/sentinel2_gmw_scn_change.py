@@ -14,11 +14,11 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
-class LandsatGMWSceneChange(EODataDownUserAnalysis):
+class Sentinel2GMWSceneChange(EODataDownUserAnalysis):
     
     def __init__(self):
         usr_req_keys = ["gmw_vec_file", "gmw_vec_lyr", "out_vec_path", "tmp_path"]
-        EODataDownUserAnalysis.__init__(self, analysis_name='LandsatGMWScnChange', req_keys=usr_req_keys)
+        EODataDownUserAnalysis.__init__(self, analysis_name='Sentinel2GMWScnChange', req_keys=usr_req_keys)
         
     def perform_analysis(self, scn_db_obj, sen_obj):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
