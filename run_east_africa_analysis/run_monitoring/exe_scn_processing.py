@@ -1,12 +1,12 @@
-from pbprocesstools.pbpt_process import PBPTProcessTool
+from pbprocesstools.pbpt_q_process import PBPTQProcessTool
 import logging
 
 logger = logging.getLogger(__name__)
 
-class ProcessEODDScn(PBPTProcessTool):
+class ProcessEODDScn(PBPTQProcessTool):
 
     def __init__(self):
-        super().__init__(cmd_name='gen_process_cmds.py', descript=None)
+        super().__init__(cmd_name='exe_scn_processing.py', descript=None)
 
     def do_processing(self, **kwargs):
         import eodatadown.eodatadownrun
@@ -26,7 +26,7 @@ class ProcessEODDScn(PBPTProcessTool):
         processing_required = eodatadown.eodatadownrun.does_scn_need_processing(self.params['scn_info'][0],
                                                                                 self.params['scn_info'][1],
                                                                                 self.params['scn_info'][2])
-        return not processing_required
+        return (not processing_required), dict()
 
 if __name__ == "__main__":
     ProcessEODDScn().std_run()
