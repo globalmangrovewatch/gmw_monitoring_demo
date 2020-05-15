@@ -37,7 +37,7 @@
                 },
                 "visual":
                 {
-                    "stretch_file":"/bigdata/eodd_wales_ard/scripts/eodd/visual/sen1_strch_stats.txt"
+                    "stretch_file":"/scratch/a.pfb/gmw_monitoring/scripts/visual/sen1_strch_stats.txt"
                 }
             },
             "download":
