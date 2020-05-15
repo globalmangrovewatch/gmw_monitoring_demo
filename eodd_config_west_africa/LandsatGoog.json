@@ -406,6 +406,32 @@
                         {
                             "tmp_path": "/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/plugin_tmp"
                         }
+                    },
+                    {
+                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins/landsat",
+                        "module":"landsat_gmw_scn_change",
+                        "class":"LandsatGMWSceneChange",
+                        "params":
+                        {
+                            "gmw_vec_file":"/scratch/a.pfb/gmw_monitoring/data/GMW_MangroveExtent_WGS84_v2.0.gpkg",
+                            "gmw_vec_lyr":"gmw2016v2.0",
+                            "out_vec_path":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/scn_chng_vecs",
+                            "tmp_path":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/plugin_tmp"
+                        }
+                    },
+                    {
+                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins/landsat",
+                        "module":"landsat_gmw_chng",
+                        "class":"LandsatGMWChange",
+                        "params":
+                        {
+                            "chng_lut_file":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_monitor_lut.gpkg",
+                            "chng_score_lut":"score_imgs",
+                            "chng_uid_lut":"uid_imgs",
+                            "out_vec_path":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_vecs",
+                            "tmp_path":"/scratch/a.pfb/gmw_monitoring/data/west_africa/landsat/plugin_tmp",
+                            "chng_vec_luts":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_tile_luts"
+                        }
                     }
                 ]
             }
