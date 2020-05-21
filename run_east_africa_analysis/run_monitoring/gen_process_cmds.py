@@ -38,5 +38,5 @@ if __name__ == "__main__":
     py_script = os.path.abspath("exe_scn_processing.py")
     script_cmd = "singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/au-eoed-py-dev.sif python {}".format(py_script)
 
-    create_tools = CreateEODataDownCmds(cmd=script_cmd, sqlite_db_file="./eodd_ea_jobs.db")
+    create_tools = CreateEODataDownCmds(cmd=script_cmd, sqlite_db_file="eodd_ea_jobs.db")
     create_tools.parse_cmds()
