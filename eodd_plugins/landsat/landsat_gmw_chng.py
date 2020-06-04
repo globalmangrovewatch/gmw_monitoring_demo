@@ -315,20 +315,3 @@ class LandsatGMWChange(EODataDownUserAnalysis):
 
         return success, out_dict
 
-
-"""
-{
-    "path":"/Users/pete/Development/globalmangrovewatch/gmw_monitoring_demo/eodd_plugins/landsat",
-    "module":"landsat_gmw_chng",
-    "class":"LandsatGMWChange",
-    "params":
-    {
-        "chng_lut_file":"/Users/pete/Temp/gmw_monitoring_files/gmw_monitor_lut.gpkg",
-        "chng_score_lut":"score_imgs",
-        "chng_uid_lut":"uid_imgs",
-        "out_vec_path":"/Users/pete/Temp/eodd_user_analysis/vec_outs",
-        "tmp_path":"/Users/pete/Temp/eodd_user_analysis/plugin_tmp"
-
-    }
-}
-"""
