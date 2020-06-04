@@ -76,7 +76,7 @@ with open(input_file) as f:
         #                                           out_img_res, 0, 1, 'KEA', rsgislib.TYPE_8UINT, snap2grid=False)
 
         rsgislib.imageutils.createBlankImgFromBBOX([min_lon, max_lon, min_lat, max_lat], wkt_str, uid_file_path,
-                                                   out_img_res, 0, 4, 'KEA', rsgislib.TYPE_32UINT, snap2grid=False)
+                                                   out_img_res, 0, 6, 'KEA', rsgislib.TYPE_32UINT, snap2grid=False)
 
         print("")
 
