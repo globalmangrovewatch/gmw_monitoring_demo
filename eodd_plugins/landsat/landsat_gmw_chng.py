@@ -247,6 +247,9 @@ class LandsatGMWChange(EODataDownUserAnalysis):
 
                                     if (n_clrcky_pxls > 0):
                                         logger.debug("There are clear sky pixels within the tile ({}) so continuing.".format(tile_basename))
+                                        out_scn_dir = os.path.join(self.params['out_data_path'], "{}_{}_scn_chng_tiles".format(scn_db_obj.Product_ID, scn_db_obj.PID))
+                                        if not os.path.exists(out_scn_dir):
+                                            os.mkdir(out_scn_dir)
 
                                         eodd_utils.get_file_lock(scr_tile, sleep_period=1, wait_iters=120, use_except=True)
                                         gmw_tile_reached_5scr_img = os.path.join(base_tmp_dir, "{}_{}_reached_5scr.kea".format(basename, tile_basename))
