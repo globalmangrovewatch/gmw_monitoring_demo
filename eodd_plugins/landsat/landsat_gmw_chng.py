@@ -295,7 +295,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
 
                         out_dict = tile_imgs_dict
                         scn_tile_lut_file = os.path.join(out_scn_dir, "{}_tiles_lut.json".format(basename))
-                        rsgis_utils.writeDict2JSON(self, tile_imgs_dict, scn_tile_lut_file)
+                        rsgis_utils.writeDict2JSON(tile_imgs_dict, scn_tile_lut_file)
                     else:
                         logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Landsat PID: {}".format(scn_db_obj.PID))
 
