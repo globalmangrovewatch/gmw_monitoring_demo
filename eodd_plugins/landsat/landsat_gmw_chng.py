@@ -264,7 +264,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                                      rsgislib.imagecalc.BandDefn('chng', gmw_tile_chng_img, 1)]
                                         exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
                                         lcl_tile_scr_img = os.path.join(out_scn_dir, "{}_{}_score.kea".format(basename, tile_basename))
-                                        rsgislib.imagecalc.bandMath(lcl_tile_scr_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, True)
+                                        rsgislib.imagecalc.bandMath(lcl_tile_scr_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, False)
                                         rsgislib.imageutils.popImageStats(lcl_tile_scr_img, usenodataval=True, nodataval=0, calcpyramids=True)
                                         tile_imgs_dict[tile_basename]['score'] = lcl_tile_scr_img
 
