@@ -263,7 +263,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                                      rsgislib.imagecalc.BandDefn('clrsky', gmw_tile_clrsky_img, 1),
                                                      rsgislib.imagecalc.BandDefn('chng', gmw_tile_chng_img, 1)]
                                         exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
-                                        lcl_tile_scr_img = os.path.join(self.params['out_data_path'], "{}_{}_score.kea".format(basename, tile_basename))
+                                        lcl_tile_scr_img = os.path.join(out_scn_dir, "{}_{}_score.kea".format(basename, tile_basename))
                                         rsgislib.imagecalc.bandMath(lcl_tile_scr_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, True)
                                         rsgislib.imageutils.popImageStats(lcl_tile_scr_img, usenodataval=True, nodataval=0, calcpyramids=True)
                                         tile_imgs_dict[tile_basename]['score'] = lcl_tile_scr_img
@@ -278,7 +278,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                         acq_date = scn_db_obj.Sensing_Time
                                         year_obs = acq_date.year
                                         day_year_obs = acq_date.timetuple().tm_yday
-                                        lcl_tile_uid_img = os.path.join(self.params['out_data_path'], "{}_{}_uid.kea".format(basename, tile_basename))
+                                        lcl_tile_uid_img = os.path.join(out_scn_dir, "{}_{}_uid.kea".format(basename, tile_basename))
                                         update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_reached_5scr_img, gmw_tile_clrsky_img, year_obs, day_year_obs, lcl_tile_uid_img)
                                         rsgislib.imageutils.popImageStats(lcl_tile_uid_img, usenodataval=True, nodataval=0, calcpyramids=True)
                                         tile_imgs_dict[tile_basename]['score'] = lcl_tile_uid_img
@@ -294,7 +294,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 logger.debug("There are no change pixels within the tile skipping.")
 
                         out_dict = tile_imgs_dict
-                        scn_tile_lut_file = os.path.join(self.params['out_data_path'], "{}_tiles_lut.json".format(basename))
+                        scn_tile_lut_file = os.path.join(out_scn_dir, "{}_tiles_lut.json".format(basename))
                         rsgis_utils.writeDict2JSON(self, tile_imgs_dict, scn_tile_lut_file)
                     else:
                         logger.error("There are no tiles intersecting with the change features. Need to check what's happened here; Landsat PID: {}".format(scn_db_obj.PID))
