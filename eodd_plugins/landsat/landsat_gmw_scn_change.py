@@ -22,6 +22,9 @@ class LandsatGMWSceneChange(EODataDownUserAnalysis):
         
     def perform_analysis(self, scn_db_obj, sen_obj):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
+        if scn_db_obj.Invalid:
+            return False, None
+
         success = True
         out_dict = None
         try:

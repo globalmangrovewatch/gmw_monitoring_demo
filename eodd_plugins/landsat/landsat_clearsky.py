@@ -18,6 +18,9 @@ class LandsatClearSky(EODataDownUserAnalysis):
         EODataDownUserAnalysis.__init__(self, analysis_name='LandsatClearSky', req_keys=usr_req_keys)
 
     def perform_analysis(self, scn_db_obj, sen_obj):
+        logger.info("Processing Scene: {}".format(scn_db_obj.PID))
+        if scn_db_obj.Invalid:
+            return False, None
         success = True
         out_info = None
         try:

@@ -85,6 +85,8 @@ class LandsatGMWChange(EODataDownUserAnalysis):
 
     def perform_analysis(self, scn_db_obj, sen_obj):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
+        if scn_db_obj.Invalid:
+            return False, None
         success = True
         out_dict = None
         try:
@@ -92,7 +94,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
             eodd_utils = EODataDownUtils()
 
             scn_ext_info = scn_db_obj.ExtendedInfo
-            if 'LandsatGMWScnChange' in scn_ext_info:
+            if (scn_ext_info is not None) and ('LandsatGMWScnChange' in scn_ext_info):
                 scn_chng_info = scn_ext_info['LandsatGMWScnChange']
                 if 'chng_feats_vec' in scn_chng_info:
                     chng_feats_vec_file = scn_chng_info['chng_feats_vec']
