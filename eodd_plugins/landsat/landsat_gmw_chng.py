@@ -190,7 +190,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                     base_chng_date = datetime.datetime(year=self.params["base_chngs"][base_chng_year]["year"],
                                                                        month=self.params["base_chngs"][base_chng_year]["month"],
                                                                        day=self.params["base_chngs"][base_chng_year]["day"])
-                                    date_delta = scn_db_obj.Date_Acquired - base_chng_date
+                                    date_delta = scn_db_obj.Sensing_Time - base_chng_date
                                     if date_delta > zero_date_delta:
                                         if first:
                                             min_delta = date_delta
@@ -272,7 +272,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
 
                                         # Update the UID image
                                         eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=120, use_except=True)
-                                        acq_date = scn_db_obj.Date_Acquired
+                                        acq_date = scn_db_obj.Sensing_Time
                                         year_obs = acq_date.year
                                         day_year_obs = acq_date.timetuple().tm_yday
                                         lcl_tile_uid_img = os.path.join(self.params['out_data_path'], "{}_{}_uid.kea".format(basename, tile_basename))
