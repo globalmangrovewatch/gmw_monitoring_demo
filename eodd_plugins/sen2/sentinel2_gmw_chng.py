@@ -64,12 +64,18 @@ def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, year_obs, day_
         start_year = uid_img_arr[0]
         chng_feats = inputs.chng_img[0]
         new_chng_pxls = numpy.zeros_like(start_year)
-        new_chng_pxls[(start_year==0)&(chng_feats==1)] = 1
+        new_chng_pxls[(start_year == 0) & (chng_feats == 1)] = 1
 
-        uid_img_arr[0, new_chng_pxls==1] = otherargs.year_obs
-        uid_img_arr[1, new_chng_pxls==1] = otherargs.day_year_obs
-        uid_img_arr[2, inputs.clrsky_img[0]==1] = otherargs.year_obs
-        uid_img_arr[3, inputs.clrsky_img[0]==1] = otherargs.day_year_obs
+        chng_scr5_year = uid_img_arr[4]
+        new_scr5_pxls = numpy.zeros_like(chng_scr5_year)
+        new_scr5_pxls[(chng_scr5_year == 0) & (inputs.nxt_scr5_img[0] == 1)] = 1
+
+        uid_img_arr[0, new_chng_pxls == 1] = otherargs.year_obs
+        uid_img_arr[1, new_chng_pxls == 1] = otherargs.day_year_obs
+        uid_img_arr[2, inputs.clrsky_img[0] == 1] = otherargs.year_obs
+        uid_img_arr[3, inputs.clrsky_img[0] == 1] = otherargs.day_year_obs
+        uid_img_arr[4, new_scr5_pxls == 1] = otherargs.year_obs
+        uid_img_arr[5, new_scr5_pxls == 1] = otherargs.day_year_obs
 
         outputs.uid_img_out = uid_img_arr
 
