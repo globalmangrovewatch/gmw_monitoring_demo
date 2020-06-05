@@ -204,21 +204,25 @@
                             "chng_lut_file":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_monitor_lut.gpkg",
                             "chng_score_lut":"score_imgs",
                             "chng_uid_lut":"uid_imgs",
-                            "out_vec_path":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_vecs",
+                            "out_data_path":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_wgs84_tiles",
                             "tmp_path":"/scratch/a.pfb/gmw_monitoring/data/west_africa/sen2/plugin_tmp",
-                            "chng_vec_luts":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_tile_luts"
-                        }
-                    },
-                    {
-                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins",
-                        "module":"gmw_upload_chng_outs",
-                        "class":"UploadGMWChange",
-                        "params":
-                        {
-                            "goog_cred":"/home/a.pfb/eodd_gmw_info/mangrove-atlas-246414-d513510b9b24.json",
-                            "bucket_name":"mangrove_atlas",
-                            "bucket_vec_dir":"deforestation-alerts/africa/vecs",
-                            "bucket_lut_dir":"deforestation-alerts/africa/luts"
+                            "base_chngs":
+                            {
+                                "2018":
+                                {
+                                    "year": 2019,
+                                    "month": 5,
+                                    "day": 1,
+                                    "path": "/scratch/a.pfb/gmw_monitoring/monitoring/hist_chng_imgs_2018"
+                                },
+                                "2019":
+                                {
+                                    "year": 2020,
+                                    "month": 1,
+                                    "day": 1,
+                                    "path": "/scratch/a.pfb/gmw_monitoring/monitoring/hist_chng_imgs_2019"
+                                }
+                            }
                         }
                     }
                 ]
