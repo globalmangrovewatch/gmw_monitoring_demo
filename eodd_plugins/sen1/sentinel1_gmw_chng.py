@@ -60,7 +60,7 @@ def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, year_obs, day_
         """
         This is an internal rios function
         """
-        uid_img_arr = numpy.copy(inputs.uid_img)
+        uid_img_arr = numpy.array(inputs.uid_img, dtype=numpy.uint32, copy=True)
         start_year = uid_img_arr[0]
         chng_feats = inputs.chng_img[0]
         new_chng_pxls = numpy.zeros_like(start_year)
