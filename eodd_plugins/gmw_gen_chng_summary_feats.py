@@ -116,7 +116,7 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
 
             if isinstance(scn_chng_info, dict):
                 scn_unq_name = sen_obj.get_scn_unq_name_record(scn_db_obj)
-                base_tmp_dir = os.path.join(self.params["tmp_path"], "{}_tmp".format(scn_unq_name))
+                base_tmp_dir = os.path.join(self.params["tmpdir"], "{}_tmp".format(scn_unq_name))
                 if not os.path.exists(base_tmp_dir):
                     os.mkdir(base_tmp_dir)
 
