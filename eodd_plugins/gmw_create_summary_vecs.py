@@ -14,6 +14,19 @@ logger = logging.getLogger(__name__)
 
 gdal.UseExceptions()
 
+def delete_vector_file(vec_file, feedback=True):
+    from osgeo import gdal
+    import os
+    ds_in_vec = gdal.OpenEx(vec_file, gdal.OF_READONLY)
+    if ds_in_vec is None:
+        os.remove(vec_file)
+    else:
+        file_lst = ds_in_vec.GetFileList()
+        for cfile in file_lst:
+            if feedback:
+                print("Deleting: {}".format(cfile))
+            os.remove(cfile)
+
 def _ratapplier_check_string_col_valid(info, inputs, outputs, otherargs):
     uid_col_vals = getattr(inputs.inrat, 'CLP_UID')
     lat_col_vals = getattr(inputs.inrat, 'lat')
@@ -73,6 +86,10 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
         if scn_db_obj.Invalid:
             return False, None
+
+        rsgis_utils = rsgislib.RSGISPyUtils()
+        eodd_utils = EODataDownUtils()
+
         success = True
         out_dict = None
         try:
@@ -83,6 +100,9 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
             if isinstance(scn_chng_info, dict):
                 scn_unq_name = sen_obj.get_scn_unq_name_record(scn_db_obj)
                 out_vec_file = os.path.join(self.params['outvecdir'], "{}_chng_vec.gpkg".format(scn_unq_name))
+                if os.path.exists(out_vec_file):
+                    delete_vector_file(out_vec_file)
+
 
                 if sen_obj.get_sensor_name() == 'LandsatGOOG':
                     scn_obs_date = scn_db_obj.Sensing_Time
@@ -91,7 +111,7 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
                 elif sen_obj.get_sensor_name() == 'Sentinel1ASF':
                     scn_obs_date = scn_db_obj.Acquisition_Date
                 else:
-                    raise Exception("")
+                    raise Exception("Did not recognise the sensor name...")
 
                 try:
                     import tqdm
@@ -181,6 +201,23 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
                     ratcontrols = ratapplier.RatApplierControls()
                     ratcontrols.setProgress(progress_bar)
                     ratapplier.apply(_ratapplier_check_string_col_valid, in_rats, out_rats, otherargs, controls=ratcontrols)
+
+                    # Update (create) the JSON LUT file.
+                    lut_file_name = "gmw_{}_lut.json".format(tile)
+                    lut_file_path = os.path.join(self.params["outlutdir"], lut_file_name)
+                    eodd_utils.get_file_lock(lut_file_path, sleep_period=1, wait_iters=120, use_except=True)
+                    if os.path.exists(lut_file_path):
+                        lut_dict = rsgis_utils.readJSON2Dict(lut_file_path)
+                    else:
+                        lut_dict = dict()
+                    
+                    obs_date_iso_str = scn_obs_date.isoformat()
+                    lut_dict[obs_date_iso_str] = dict()
+                    lut_dict[obs_date_iso_str]["file"] = out_vec_file
+                    lut_dict[obs_date_iso_str]["layer"] = tile
+
+                    rsgis_utils.writeDict2JSON(lut_dict, lut_file_path)
+                    eodd_utils.release_file_lock(lut_file_path)
 
                 ds = None
 
