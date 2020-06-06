@@ -127,9 +127,9 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                 out_dict = dict()
 
                 for tile in scn_chng_info:
-                    print(tile)
+                    logger.debug("Processing tile {}...".format(tile))
                     if len(scn_chng_info[tile]) > 0:
-                        print("{} has data...")
+                        logger.debug("{} has data...".format(tile))
                         if ('uid' in scn_chng_info[tile]) and ('score' in scn_chng_info[tile]):
                             uid_tile_img = scn_chng_info[tile]['uid']
                             score_tile_img = scn_chng_info[tile]['score']
@@ -184,6 +184,5 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
             logger.exception(e)
             success = False
 
-        success = False
         return success, out_dict
 
