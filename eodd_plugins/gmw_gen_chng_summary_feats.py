@@ -124,6 +124,8 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                 if not os.path.exists(out_scn_dir):
                     os.mkdir(out_scn_dir)
 
+                out_dict = dict()
+
                 for tile in scn_chng_info:
                     print(tile)
                     if len(scn_chng_info[tile]) > 0:
@@ -154,6 +156,8 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                         rsgislib.rastergis.populateRATWithPropValidPxls(score_tile_img, sum_chng_img, outcolsname='prop_chng', nodataval=0.0)
                         rsgislib.rastergis.populateRATWithMode(score_tile_img, sum_chng_img, outcolsname='score', usenodata=True, nodataval=0, outnodata=0, modeband=1, ratband=1)
                         days_img = os.path.join(base_tmp_dir, "{}_day_dates.kea".format(scn_base_name))
+                        if os.path.exists(days_img):
+                            rsgis_utils.deleteFileWithBasename(days_img)
                         convert_dates(uid_tile_img, days_img)
                         rsgislib.imageutils.popImageStats(days_img, usenodataval=True, nodataval=0, calcpyramids=False)
                         bs = []
@@ -165,10 +169,13 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                         create_date_columns_from_days_col(sum_chng_img, 'firstobs', base_date, 'firstobs_day', 'firstobs_month', 'firstobs_year')
                         create_date_columns_from_days_col(sum_chng_img, 'lastobs', base_date, 'lastobs_day', 'lastobs_month', 'lastobs_year')
                         create_date_columns_from_days_col(sum_chng_img, 'scr5obs', base_date, 'fscr5obs_day', 'scr5obs_month', 'scr5obs_year')
+                        out_dict[tile] = sum_chng_img
 
                 # Remove the tmp directory to clean up...
                 if os.path.exists(base_tmp_dir):
                     shutil.rmtree(base_tmp_dir)
+
+                success = True
             else:
                 logger.debug("No change features available as outputs from previous steps...")
 

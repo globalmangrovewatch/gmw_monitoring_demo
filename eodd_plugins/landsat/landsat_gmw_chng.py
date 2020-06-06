@@ -285,6 +285,8 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                         year_obs = acq_date.year
                                         day_year_obs = acq_date.timetuple().tm_yday
                                         lcl_tile_uid_img = os.path.join(out_scn_dir, "{}_{}_uid.kea".format(basename, tile_basename))
+                                        if os.path.exists(lcl_tile_uid_img):
+                                            rsgis_utils.deleteFileWithBasename(lcl_tile_uid_img)
                                         update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_reached_5scr_img, gmw_tile_clrsky_img, year_obs, day_year_obs, lcl_tile_uid_img)
                                         rsgislib.imageutils.popImageStats(lcl_tile_uid_img, usenodataval=True, nodataval=0, calcpyramids=True)
                                         tile_imgs_dict[tile_basename]['uid'] = lcl_tile_uid_img
@@ -300,6 +302,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
                                 logger.debug("There are no change pixels within the tile skipping.")
 
                         out_dict = tile_imgs_dict
+                        success = True
                         scn_tile_lut_file = os.path.join(out_scn_dir, "{}_tiles_lut.json".format(basename))
                         rsgis_utils.writeDict2JSON(tile_imgs_dict, scn_tile_lut_file)
                     else:
