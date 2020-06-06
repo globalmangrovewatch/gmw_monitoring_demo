@@ -426,6 +426,16 @@
                             "outdir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_wgs84_sum_tiles",
                             "tmpdir":"/scratch/a.pfb/gmw_monitoring/tmp_dir"
                         }
+                    },
+                    {
+                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins",
+                        "module":"gmw_create_summary_vecs",
+                        "class":"CreateSummaryVecFeats",
+                        "params":
+                        {
+                            "outvecdir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_vecs",
+                            "outlutdir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_tile_luts"
+                        }
                     }
                 ]
             }
