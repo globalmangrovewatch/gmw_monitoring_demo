@@ -64,18 +64,3 @@ class UploadGMWChange(EODataDownUserAnalysis):
 
         return success, out_dict
 
-
-"""
-{
-    "path":"/Users/pete/Development/globalmangrovewatch/gmw_monitoring_demo/eodd_plugins",
-    "module":"gmw_upload_chng_outs",
-    "class":"UploadGMWChange",
-    "params":
-    {
-        "goog_cred":"/Users/pete/Dropbox/GlobalMangroveWatch/development_files/GlobalMangroveWatch-74b58b05fd73.json",
-        "bucket_name":"gmw_chng_feats_test_1234",
-        "bucket_vec_dir":"pjb_test_east_africa"
-        "bucket_lut_dir":"pjb_test_east_africa"
-    }
-}
-"""

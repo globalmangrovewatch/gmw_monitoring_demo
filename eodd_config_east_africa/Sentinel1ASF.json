@@ -483,6 +483,16 @@
                                 }
                             }
                         }
+                    },
+                    {
+                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins",
+                        "module":"gmw_gen_chng_summary_feats",
+                        "class":"GenChngSummaryFeats",
+                        "params":
+                        {
+                            "outdir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_wgs84_sum_tiles",
+                            "tmpdir":"/scratch/a.pfb/gmw_monitoring/tmp_dir"
+                        }
                     }
                 ]
             }
