@@ -102,7 +102,7 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
             scn_ext_info = scn_db_obj.ExtendedInfo
             if (scn_ext_info is not None) and ('Sentinel1GMWScnChange' in scn_ext_info):
                 scn_chng_info = scn_ext_info['Sentinel1GMWScnChange']
-                if 'chng_feats_vec' in scn_chng_info:
+                if isinstance(scn_chng_info, dict) and ('chng_feats_vec' in scn_chng_info):
                     chng_feats_vec_file = scn_chng_info['chng_feats_vec']
                     logger.debug("Have change features vector file: {}".format(chng_feats_vec_file))
                     chng_feats_vec_lyrs = rsgislib.vectorutils.getVecLyrsLst(chng_feats_vec_file)
