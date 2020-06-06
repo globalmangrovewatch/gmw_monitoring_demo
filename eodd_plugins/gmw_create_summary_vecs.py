@@ -210,7 +210,7 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
                         lut_dict = rsgis_utils.readJSON2Dict(lut_file_path)
                     else:
                         lut_dict = dict()
-                    
+
                     obs_date_iso_str = scn_obs_date.isoformat()
                     lut_dict[obs_date_iso_str] = dict()
                     lut_dict[obs_date_iso_str]["file"] = out_vec_file
@@ -218,10 +218,10 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
 
                     rsgis_utils.writeDict2JSON(lut_dict, lut_file_path)
                     eodd_utils.release_file_lock(lut_file_path)
+                    out_dict[tile] = out_vec_file
 
                 ds = None
 
-                out_dict[tile] = out_vec_file
                 success = True
             else:
                 logger.debug("No change features available as outputs from previous steps...")
@@ -231,6 +231,5 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
             logger.exception(e)
             success = False
 
-        success = False
         return success, out_dict
 
