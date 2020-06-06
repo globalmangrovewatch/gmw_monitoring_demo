@@ -235,7 +235,7 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
                                             # Mask the Score Image
                                             eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=120, use_except=True)
                                             uid_tile_tmp = os.path.join(base_tmp_dir, "{}_{}_uid_tmp.kea".format(basename, tile_basename))
-                                            rsgislib.imageutils.maskImage(uid_tile, base_chng_tile_img, uid_tile_tmp, 'KEA', rsgislib.TYPE_8UINT, 0, 1)
+                                            rsgislib.imageutils.maskImage(uid_tile, base_chng_tile_img, uid_tile_tmp, 'KEA', rsgislib.TYPE_32UINT, 0, 1)
                                             # Replace the score image.
                                             rsgislib.imageutils.gdal_translate(uid_tile_tmp, uid_tile, gdal_format='KEA')
                                             eodd_utils.release_file_lock(uid_tile)
