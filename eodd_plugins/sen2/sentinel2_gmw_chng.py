@@ -288,7 +288,7 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                         lcl_tile_uid_img = os.path.join(out_scn_dir, "{}_{}_uid.kea".format(basename, tile_basename))
                                         update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_reached_5scr_img, gmw_tile_clrsky_img, year_obs, day_year_obs, lcl_tile_uid_img)
                                         rsgislib.imageutils.popImageStats(lcl_tile_uid_img, usenodataval=True, nodataval=0, calcpyramids=True)
-                                        tile_imgs_dict[tile_basename]['score'] = lcl_tile_uid_img
+                                        tile_imgs_dict[tile_basename]['uid'] = lcl_tile_uid_img
 
                                         # Overwrite the global UID image.
                                         rsgislib.imageutils.gdal_translate(lcl_tile_uid_img, uid_tile, 'KEA')
