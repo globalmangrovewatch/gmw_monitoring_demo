@@ -168,7 +168,7 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                         base_date = datetime.date(1970, 1, 1)
                         create_date_columns_from_days_col(sum_chng_img, 'firstobs', base_date, 'firstobs_day', 'firstobs_month', 'firstobs_year')
                         create_date_columns_from_days_col(sum_chng_img, 'lastobs', base_date, 'lastobs_day', 'lastobs_month', 'lastobs_year')
-                        create_date_columns_from_days_col(sum_chng_img, 'scr5obs', base_date, 'fscr5obs_day', 'scr5obs_month', 'scr5obs_year')
+                        create_date_columns_from_days_col(sum_chng_img, 'scr5obs', base_date, 'scr5obs_day', 'scr5obs_month', 'scr5obs_year')
                         out_dict[tile] = sum_chng_img
 
                 # Remove the tmp directory to clean up...
