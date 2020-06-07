@@ -61,12 +61,12 @@ def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, year_obs, day_
         This is an internal rios function
         """
         uid_img_arr = numpy.array(inputs.uid_img, dtype=numpy.uint32, copy=True)
-        start_year = uid_img_arr[0]
+        start_year = inputs.uid_img[0]
         chng_feats = inputs.chng_img[0]
         new_chng_pxls = numpy.zeros_like(start_year)
         new_chng_pxls[(start_year == 0) & (chng_feats == 1)] = 1
 
-        chng_scr5_year = uid_img_arr[4]
+        chng_scr5_year = inputs.uid_img[4]
         new_scr5_pxls = numpy.zeros_like(chng_scr5_year)
         new_scr5_pxls[(chng_scr5_year == 0) & (inputs.nxt_scr5_img[0] == 1)] = 1
 
@@ -293,7 +293,7 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
 
                                         # Overwrite the global UID image.
                                         rsgislib.imageutils.gdal_translate(lcl_tile_uid_img, uid_tile, 'KEA')
-                                        rsgislib.imageutils.popImageStats(lcl_tile_uid_img, usenodataval=True, nodataval=0, calcpyramids=True)
+                                        rsgislib.imageutils.popImageStats(uid_tile, usenodataval=True, nodataval=0, calcpyramids=True)
                                         eodd_utils.release_file_lock(uid_tile)
                                 else:
                                     logger.debug("There are no change pixels within the tile skipping.")
