@@ -13,6 +13,55 @@ import datetime
 logger = logging.getLogger(__name__)
 
 
+def findminclumpval(clumpsImg, valsImg, valBand, out_col):
+    import rsgislib.rastergis
+    import rsgislib.rastergis.ratutils
+    from rios import applier
+    import numpy
+    try:
+        import tqdm
+        progress_bar = rsgislib.TQDMProgressBar()
+    except:
+        from rios import cuiprogress
+        progress_bar = cuiprogress.GDALProgressBar()
+
+    n_clumps = rsgislib.rastergis.getRATLength(clumpsImg)
+    min_vals = numpy.zeros(n_clumps, dtype=int)
+
+    infiles = applier.FilenameAssociations()
+    infiles.clumpsImg = clumpsImg
+    infiles.valsImg = valsImg
+    outfiles = applier.FilenameAssociations()
+    otherargs = applier.OtherInputs()
+    otherargs.min_vals = min_vals
+    otherargs.valBand = valBand - 1
+    aControls = applier.ApplierControls()
+    aControls.progress = progress_bar
+    aControls.omitPyramids = True
+    aControls.calcStats = False
+
+    def _findMinVals(info, inputs, outputs, otherargs):
+        """
+        This is an internal rios function
+        """
+        unqClumpVals = numpy.unique(inputs.clumpsImg)
+        clumpValsFlat = inputs.clumpsImg.flatten()
+        for clump in unqClumpVals:
+            pxl_vals = inputs.valsImg[otherargs.valBand].flatten()[clumpValsFlat == clump]
+            pxl_vals = pxl_vals[pxl_vals > 0]
+            if pxl_vals.shape[0] > 0:
+                clump_min_val = pxl_vals.min()
+                if otherargs.min_vals[clump] == 0:
+                    otherargs.min_vals[clump] = clump_min_val
+                else:
+                    if clump_min_val < otherargs.min_vals[clump]:
+                        otherargs.min_vals[clump] = clump_min_val
+
+    applier.apply(_findMinVals, infiles, outfiles, otherargs, controls=aControls)
+
+    rsgislib.rastergis.ratutils.setColumnData(clumpsImg, out_col, min_vals)
+
+
 def get_days_since(year, dayofyear, base_date):
     if year < base_date.year:
         raise Exception("The year specified is before the base date.")
@@ -161,10 +210,10 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                         #rsgislib.imageutils.popImageStats(days_img, usenodataval=True, nodataval=0, calcpyramids=False)
                         ##############
                         bs = []
-                        bs.append(rsgislib.rastergis.BandAttStats(band=2, minField='firstobs1970days'))
                         bs.append(rsgislib.rastergis.BandAttStats(band=4, maxField='lastobs1970days'))
-                        bs.append(rsgislib.rastergis.BandAttStats(band=6, minField='scr5obs1970days'))
                         rsgislib.rastergis.populateRATWithStats(uid_tile_img, sum_chng_img, bs)
+                        findminclumpval(sum_chng_img, uid_tile_img, 2, 'firstobs1970days')
+                        findminclumpval(sum_chng_img, uid_tile_img, 6, 'scr5obs1970days')
                         base_date = datetime.date(1970, 1, 1)
                         create_date_columns_from_days_col(sum_chng_img, 'firstobs1970days', base_date, 'firstobs_day', 'firstobs_month', 'firstobs_year')
                         create_date_columns_from_days_col(sum_chng_img, 'lastobs1970days', base_date, 'lastobs_day', 'lastobs_month', 'lastobs_year')
