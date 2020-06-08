@@ -20,7 +20,7 @@ def get_days_since(year, dayofyear, base_date):
     date_val = date_val + datetime.timedelta(days=int(dayofyear - 1))
     return (date_val - base_date).days
 
-
+"""
 def convert_dates(uid_img, out_days_img, base_year=1970):
     from rios import applier
     import numpy
@@ -43,9 +43,6 @@ def convert_dates(uid_img, out_days_img, base_year=1970):
     aControls.calcStats = False
 
     def _update_dates_img(info, inputs, outputs, otherargs):
-        """
-        This is an internal rios function
-        """
         uid_img_arr = numpy.copy(inputs.uid_img)
         uid_shp = uid_img_arr.shape
         outputs.out_days_img = numpy.zeros((3, uid_shp[1], uid_shp[2]), dtype=numpy.int32)
@@ -61,7 +58,7 @@ def convert_dates(uid_img, out_days_img, base_year=1970):
                         outputs.out_days_img[2, x, y] = get_days_since(uid_img_arr[4, x, y], uid_img_arr[5, x, y], otherargs.base_date)
 
     applier.apply(_update_dates_img, infiles, outfiles, otherargs, controls=aControls)
-
+"""
 
 def create_uid_col(clumps_img, col_name='UID'):
     import numpy
@@ -155,20 +152,23 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                         rsgislib.rastergis.spatialLocation(sum_chng_img, eastings="lon", northings="lat")  # WGS84 flips the axis'.
                         rsgislib.rastergis.populateRATWithPropValidPxls(score_tile_img, sum_chng_img, outcolsname='prop_chng', nodataval=0.0)
                         rsgislib.rastergis.populateRATWithMode(score_tile_img, sum_chng_img, outcolsname='score', usenodata=True, nodataval=0, outnodata=0, modeband=1, ratband=1)
-                        days_img = os.path.join(base_tmp_dir, "{}_day_dates.kea".format(scn_base_name))
-                        if os.path.exists(days_img):
-                            rsgis_utils.deleteFileWithBasename(days_img)
-                        convert_dates(uid_tile_img, days_img)
-                        rsgislib.imageutils.popImageStats(days_img, usenodataval=True, nodataval=0, calcpyramids=False)
+                        #############
+                        # Removed as changed earlier script to output in days since 1970/1/1. Calling this function is slow.
+                        #days_img = os.path.join(base_tmp_dir, "{}_day_dates.kea".format(scn_base_name))
+                        #if os.path.exists(days_img):
+                        #    rsgis_utils.deleteFileWithBasename(days_img)
+                        #convert_dates(uid_tile_img, days_img)
+                        #rsgislib.imageutils.popImageStats(days_img, usenodataval=True, nodataval=0, calcpyramids=False)
+                        ##############
                         bs = []
-                        bs.append(rsgislib.rastergis.BandAttStats(band=1, minField='firstobs'))
-                        bs.append(rsgislib.rastergis.BandAttStats(band=2, maxField='lastobs'))
-                        bs.append(rsgislib.rastergis.BandAttStats(band=3, minField='scr5obs'))
-                        rsgislib.rastergis.populateRATWithStats(days_img, sum_chng_img, bs)
+                        bs.append(rsgislib.rastergis.BandAttStats(band=2, minField='firstobs1970days'))
+                        bs.append(rsgislib.rastergis.BandAttStats(band=4, maxField='lastobs1970days'))
+                        bs.append(rsgislib.rastergis.BandAttStats(band=6, minField='scr5obs1970days'))
+                        rsgislib.rastergis.populateRATWithStats(uid_tile_img, sum_chng_img, bs)
                         base_date = datetime.date(1970, 1, 1)
-                        create_date_columns_from_days_col(sum_chng_img, 'firstobs', base_date, 'firstobs_day', 'firstobs_month', 'firstobs_year')
-                        create_date_columns_from_days_col(sum_chng_img, 'lastobs', base_date, 'lastobs_day', 'lastobs_month', 'lastobs_year')
-                        create_date_columns_from_days_col(sum_chng_img, 'scr5obs', base_date, 'scr5obs_day', 'scr5obs_month', 'scr5obs_year')
+                        create_date_columns_from_days_col(sum_chng_img, 'firstobs1970days', base_date, 'firstobs_day', 'firstobs_month', 'firstobs_year')
+                        create_date_columns_from_days_col(sum_chng_img, 'lastobs1970days', base_date, 'lastobs_day', 'lastobs_month', 'lastobs_year')
+                        create_date_columns_from_days_col(sum_chng_img, 'scr5obs1970days', base_date, 'scr5obs_day', 'scr5obs_month', 'scr5obs_year')
                         out_dict[tile] = sum_chng_img
 
                 # Remove the tmp directory to clean up...

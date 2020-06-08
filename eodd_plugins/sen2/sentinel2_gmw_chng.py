@@ -32,7 +32,7 @@ def delete_vector_file(vec_file, feedback=True):
             print("Deleting: {}".format(cfile))
         os.remove(cfile)
 
-def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, year_obs, day_year_obs, tmp_uid_tile):
+def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, obs_day_since_base, tmp_uid_tile):
     from rios import applier
     try:
         import tqdm
@@ -49,8 +49,7 @@ def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, year_obs, day_
     outfiles = applier.FilenameAssociations()
     outfiles.uid_img_out = tmp_uid_tile
     otherargs = applier.OtherInputs()
-    otherargs.year_obs = year_obs
-    otherargs.day_year_obs = day_year_obs
+    otherargs.obs_day_since_base = obs_day_since_base
     aControls = applier.ApplierControls()
     aControls.progress = progress_bar
     aControls.omitPyramids = True
@@ -70,12 +69,12 @@ def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, year_obs, day_
         new_scr5_pxls = numpy.zeros_like(chng_scr5_year)
         new_scr5_pxls[(chng_scr5_year == 0) & (inputs.nxt_scr5_img[0] == 1)] = 1
 
-        uid_img_arr[0, new_chng_pxls == 1] = otherargs.year_obs
-        uid_img_arr[1, new_chng_pxls == 1] = otherargs.day_year_obs
-        uid_img_arr[2, inputs.clrsky_img[0] == 1] = otherargs.year_obs
-        uid_img_arr[3, inputs.clrsky_img[0] == 1] = otherargs.day_year_obs
-        uid_img_arr[4, new_scr5_pxls == 1] = otherargs.year_obs
-        uid_img_arr[5, new_scr5_pxls == 1] = otherargs.day_year_obs
+        uid_img_arr[0, new_chng_pxls == 1] = 1970
+        uid_img_arr[1, new_chng_pxls == 1] = otherargs.obs_day_since_base
+        uid_img_arr[2, inputs.clrsky_img[0] == 1] = 1970
+        uid_img_arr[3, inputs.clrsky_img[0] == 1] = otherargs.obs_day_since_base
+        uid_img_arr[4, new_scr5_pxls == 1] = 1970
+        uid_img_arr[5, new_scr5_pxls == 1] = otherargs.obs_day_since_base
 
         outputs.uid_img_out = uid_img_arr
 
@@ -282,12 +281,15 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                         # Update the UID image
                                         eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=120, use_except=True)
                                         acq_date = scn_db_obj.Sensing_Time
-                                        year_obs = acq_date.year
-                                        day_year_obs = acq_date.timetuple().tm_yday
+                                        # year_obs = acq_date.year
+                                        # day_year_obs = acq_date.timetuple().tm_yday
+                                        base_date = datetime.datetime(year=1970, month=1, day=1)
+                                        obs_day_since_base = (acq_date - base_date).days
+
                                         lcl_tile_uid_img = os.path.join(out_scn_dir, "{}_{}_uid.kea".format(basename, tile_basename))
                                         if os.path.exists(lcl_tile_uid_img):
                                             rsgis_utils.deleteFileWithBasename(lcl_tile_uid_img)
-                                        update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_reached_5scr_img, gmw_tile_clrsky_img, year_obs, day_year_obs, lcl_tile_uid_img)
+                                        update_uid_image(uid_tile, gmw_tile_chng_img, gmw_tile_reached_5scr_img, gmw_tile_clrsky_img, obs_day_since_base, lcl_tile_uid_img)
                                         rsgislib.imageutils.popImageStats(lcl_tile_uid_img, usenodataval=True, nodataval=0, calcpyramids=True)
                                         tile_imgs_dict[tile_basename]['uid'] = lcl_tile_uid_img
 
