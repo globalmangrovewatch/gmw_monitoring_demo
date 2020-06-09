@@ -151,7 +151,7 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
             scn_ext_info = scn_db_obj.ExtendedInfo
             if (scn_ext_info is not None):
                 scn_chng_info = None
-                if 'LandsatGMWScnChange' in scn_ext_info:
+                if 'LandsatGMWChangeFnl' in scn_ext_info:
                     scn_chng_info = scn_ext_info['LandsatGMWChangeFnl']
                 elif 'Sentinel1GMWChangeFnl' in scn_ext_info:
                     scn_chng_info = scn_ext_info['Sentinel1GMWChangeFnl']

@@ -49,7 +49,7 @@ def update_uid_image(uid_img, chng_img, nxt_scr5_img, clrsky_img, obs_day_since_
     outfiles = applier.FilenameAssociations()
     outfiles.uid_img_out = tmp_uid_tile
     otherargs = applier.OtherInputs()
-    otherargs.obs_day_since_base
+    otherargs.obs_day_since_base = obs_day_since_base
     aControls = applier.ApplierControls()
     aControls.progress = progress_bar
     aControls.omitPyramids = True
@@ -123,8 +123,8 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
                     if not os.path.exists(base_tmp_dir):
                         os.mkdir(base_tmp_dir)
 
-                    valid_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec.geojson".format(basename))
-                    rsgislib.vectorutils.polygoniseRaster2VecLyr(valid_vec_file, 'vld', 'GEOJSON', valid_img_file,
+                    valid_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec.gpkg".format(basename))
+                    rsgislib.vectorutils.polygoniseRaster2VecLyr(valid_vec_file, 'vld', 'GPKG', valid_img_file,
                                                                  imgBandNo=1, maskImg=valid_img_file, imgMaskBandNo=1,
                                                                  replace_file=True, replace_lyr=True,
                                                                  pxl_val_fieldname='PXLVAL')
@@ -139,10 +139,10 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
                     except OSError as e:
                         raise Exception('Failed to run command: ' + cmd)
 
-                    valid_wgs84_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec_wgs84.geojson".format(basename))
+                    valid_wgs84_vec_file = os.path.join(base_tmp_dir, "{}_valid_vec_wgs84.gpkg".format(basename))
                     if os.path.exists(valid_wgs84_vec_file):
                         delete_vector_file(valid_wgs84_vec_file)
-                    cmd = "ogr2ogr -f GEOJSON -nln vld -t_srs EPSG:4326 {} {} vld".format(valid_wgs84_vec_file,
+                    cmd = "ogr2ogr -f GPKG -nln vld -t_srs EPSG:4326 {} {} vld".format(valid_wgs84_vec_file,
                                                                                           valid_vec_file)
                     logger.debug("Going to run command: '{}'".format(cmd))
                     try:
