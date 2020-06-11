@@ -82,160 +82,154 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
         usr_req_keys = ["outvecdir", "outlutdir"]
         EODataDownUserAnalysis.__init__(self, analysis_name='CreateSummaryVecFeats', req_keys=usr_req_keys)
 
-    def perform_analysis(self, scn_db_obj, sen_obj):
+    def perform_analysis(self, scn_db_obj, sen_obj, plgin_objs):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
         if scn_db_obj.Invalid:
-            return False, None
+            return False, None, False
 
         rsgis_utils = rsgislib.RSGISPyUtils()
         eodd_utils = EODataDownUtils()
 
         success = True
+        outputs = False
         out_dict = None
-        try:
-            scn_ext_info = scn_db_obj.ExtendedInfo
-            if (scn_ext_info is not None) and ('GenChngSummaryFeats' in scn_ext_info):
-                scn_chng_info = scn_ext_info['GenChngSummaryFeats']
 
-                if isinstance(scn_chng_info, dict):
-                    scn_unq_name = sen_obj.get_scn_unq_name_record(scn_db_obj)
-                    out_vec_file = os.path.join(self.params['outvecdir'], "{}_chng_vec.gpkg".format(scn_unq_name))
-                    if os.path.exists(out_vec_file):
-                        delete_vector_file(out_vec_file)
+        if 'GenChngSummaryFeats' in plgin_objs:
+            if plgin_objs['GenChngSummaryFeats'].Completed and plgin_objs['GenChngSummaryFeats'].Output and plgin_objs['GenChngSummaryFeats'].Success:
+                scn_chng_info = plgin_objs['GenChngSummaryFeats'].ExtendedInfo
 
+                scn_unq_name = sen_obj.get_scn_unq_name_record(scn_db_obj)
+                out_vec_file = os.path.join(self.params['outvecdir'], "{}_chng_vec.gpkg".format(scn_unq_name))
+                if os.path.exists(out_vec_file):
+                    delete_vector_file(out_vec_file)
 
-                    if sen_obj.get_sensor_name() == 'LandsatGOOG':
-                        scn_obs_date = scn_db_obj.Sensing_Time
-                    elif sen_obj.get_sensor_name() == 'Sentinel2GOOG':
-                        scn_obs_date = scn_db_obj.Sensing_Time
-                    elif sen_obj.get_sensor_name() == 'Sentinel1ASF':
-                        scn_obs_date = scn_db_obj.Acquisition_Date
-                    else:
-                        raise Exception("Did not recognise the sensor name...")
-
-                    start_date = datetime.datetime(year=2019, month=4, day=30)
-                    if scn_obs_date > start_date:
-                        try:
-                            import tqdm
-                            progress_bar = rsgislib.TQDMProgressBar()
-                        except:
-                            from rios import cuiprogress
-                            progress_bar = cuiprogress.GDALProgressBar()
-
-                        drv = gdal.GetDriverByName("GPKG")
-                        if drv is None:
-                            raise Exception("Driver GPKG is not avaiable.")
-
-                        ds = drv.Create(out_vec_file, 0, 0, 0, gdal.GDT_Unknown)
-                        if ds is None:
-                            raise Exception("Could not create output file: {}.".format(out_vec_file))
-
-                        out_dict = dict()
-                        for tile in scn_chng_info:
-                            logger.debug("Processing tile {}...".format(tile))
-                            clumps_img = scn_chng_info[tile]
-
-                            in_rats = ratapplier.RatAssociations()
-                            out_rats = ratapplier.RatAssociations()
-                            in_rats.inrat = ratapplier.RatHandle(clumps_img)
-
-                            lyr = ds.CreateLayer(tile, None, ogr.wkbPoint)
-                            if lyr is None:
-                                raise Exception("Could not create output layer: {}.".format(tile))
-
-                            field_uid_defn = ogr.FieldDefn("uid", ogr.OFTInteger)
-                            if lyr.CreateField(field_uid_defn) != 0:
-                                raise Exception("Could not create field: 'uid'.")
-
-                            field_prop_chng_defn = ogr.FieldDefn("prop_chng", ogr.OFTReal)
-                            if lyr.CreateField(field_prop_chng_defn) != 0:
-                                raise Exception("Could not create field: 'prop_chng'.")
-
-                            field_score_defn = ogr.FieldDefn("score", ogr.OFTInteger)
-                            if lyr.CreateField(field_score_defn) != 0:
-                                raise Exception("Could not create field: 'score'.")
-
-                            # First Observation Date
-                            field_firstobsday_defn = ogr.FieldDefn("firstobsday", ogr.OFTInteger)
-                            if lyr.CreateField(field_firstobsday_defn) != 0:
-                                raise Exception("Could not create field: 'firstobsday'.")
-
-                            field_firstobsmonth_defn = ogr.FieldDefn("firstobsmonth", ogr.OFTInteger)
-                            if lyr.CreateField(field_firstobsmonth_defn) != 0:
-                                raise Exception("Could not create field: 'firstobsmonth'.")
-
-                            field_firstobsyear_defn = ogr.FieldDefn("firstobsyear", ogr.OFTInteger)
-                            if lyr.CreateField(field_firstobsyear_defn) != 0:
-                                raise Exception("Could not create field: 'firstobsyear'.")
-
-                            # Last Observation Date
-                            field_lastobsday_defn = ogr.FieldDefn("lastobsday", ogr.OFTInteger)
-                            if lyr.CreateField(field_lastobsday_defn) != 0:
-                                raise Exception("Could not create field: 'lastobsday'.")
-
-                            field_lastobsmonth_defn = ogr.FieldDefn("lastobsmonth", ogr.OFTInteger)
-                            if lyr.CreateField(field_lastobsmonth_defn) != 0:
-                                raise Exception("Could not create field: 'lastobsmonth'.")
-
-                            field_lastobsyear_defn = ogr.FieldDefn("lastobsyear", ogr.OFTInteger)
-                            if lyr.CreateField(field_lastobsyear_defn) != 0:
-                                raise Exception("Could not create field: 'lastobsyear'.")
-
-                            # Observation Date Where Score Reached 5
-                            field_scr5obsday_defn = ogr.FieldDefn("scr5obsday", ogr.OFTInteger)
-                            if lyr.CreateField(field_scr5obsday_defn) != 0:
-                                raise Exception("Could not create field: 'scr5obsday'.")
-
-                            field_scr5obsmonth_defn = ogr.FieldDefn("scr5obsmonth", ogr.OFTInteger)
-                            if lyr.CreateField(field_scr5obsmonth_defn) != 0:
-                                raise Exception("Could not create field: 'scr5obsmonth'.")
-
-                            field_scr5obsyear_defn = ogr.FieldDefn("scr5obsyear", ogr.OFTInteger)
-                            if lyr.CreateField(field_scr5obsyear_defn) != 0:
-                                raise Exception("Could not create field: 'scr5obsyear'.")
-
-                            lyr_defn = lyr.GetLayerDefn()
-
-                            otherargs = ratapplier.OtherArguments()
-                            otherargs.lyr = lyr
-                            otherargs.lyr_defn = lyr_defn
-
-                            ratcontrols = ratapplier.RatApplierControls()
-                            ratcontrols.setProgress(progress_bar)
-                            ratapplier.apply(_ratapplier_check_string_col_valid, in_rats, out_rats, otherargs, controls=ratcontrols)
-
-                            # Update (create) the JSON LUT file.
-                            lut_file_name = "gmw_{}_lut.json".format(tile)
-                            lut_file_path = os.path.join(self.params["outlutdir"], lut_file_name)
-                            eodd_utils.get_file_lock(lut_file_path, sleep_period=1, wait_iters=120, use_except=True)
-                            if os.path.exists(lut_file_path):
-                                lut_dict = rsgis_utils.readJSON2Dict(lut_file_path)
-                            else:
-                                lut_dict = dict()
-
-                            obs_date_iso_str = scn_obs_date.isoformat()
-                            lut_dict[obs_date_iso_str] = dict()
-                            lut_dict[obs_date_iso_str]["file"] = out_vec_file
-                            lut_dict[obs_date_iso_str]["layer"] = tile
-
-                            rsgis_utils.writeDict2JSON(lut_dict, lut_file_path)
-                            eodd_utils.release_file_lock(lut_file_path)
-                            out_dict[tile] = out_vec_file
-
-                        ds = None
-
-                        success = True
-                    else:
-                        logger.debug("Scene is within window used to mask change outside of range.")
+                if sen_obj.get_sensor_name() == 'LandsatGOOG':
+                    scn_obs_date = scn_db_obj.Sensing_Time
+                elif sen_obj.get_sensor_name() == 'Sentinel2GOOG':
+                    scn_obs_date = scn_db_obj.Sensing_Time
+                elif sen_obj.get_sensor_name() == 'Sentinel1ASF':
+                    scn_obs_date = scn_db_obj.Acquisition_Date
                 else:
-                    logger.debug("No change features available as outputs from previous steps...")
+                    raise Exception("Did not recognise the sensor name...")
+
+                start_date = datetime.datetime(year=2019, month=4, day=30)
+                if scn_obs_date > start_date:
+                    try:
+                        import tqdm
+                        progress_bar = rsgislib.TQDMProgressBar()
+                    except:
+                        from rios import cuiprogress
+                        progress_bar = cuiprogress.GDALProgressBar()
+
+                    drv = gdal.GetDriverByName("GPKG")
+                    if drv is None:
+                        raise Exception("Driver GPKG is not avaiable.")
+
+                    ds = drv.Create(out_vec_file, 0, 0, 0, gdal.GDT_Unknown)
+                    if ds is None:
+                        raise Exception("Could not create output file: {}.".format(out_vec_file))
+
+                    out_dict = dict()
+                    for tile in scn_chng_info:
+                        logger.debug("Processing tile {}...".format(tile))
+                        clumps_img = scn_chng_info[tile]
+
+                        in_rats = ratapplier.RatAssociations()
+                        out_rats = ratapplier.RatAssociations()
+                        in_rats.inrat = ratapplier.RatHandle(clumps_img)
+
+                        lyr = ds.CreateLayer(tile, None, ogr.wkbPoint)
+                        if lyr is None:
+                            raise Exception("Could not create output layer: {}.".format(tile))
+
+                        field_uid_defn = ogr.FieldDefn("uid", ogr.OFTInteger)
+                        if lyr.CreateField(field_uid_defn) != 0:
+                            raise Exception("Could not create field: 'uid'.")
+
+                        field_prop_chng_defn = ogr.FieldDefn("prop_chng", ogr.OFTReal)
+                        if lyr.CreateField(field_prop_chng_defn) != 0:
+                            raise Exception("Could not create field: 'prop_chng'.")
+
+                        field_score_defn = ogr.FieldDefn("score", ogr.OFTInteger)
+                        if lyr.CreateField(field_score_defn) != 0:
+                            raise Exception("Could not create field: 'score'.")
+
+                        # First Observation Date
+                        field_firstobsday_defn = ogr.FieldDefn("firstobsday", ogr.OFTInteger)
+                        if lyr.CreateField(field_firstobsday_defn) != 0:
+                            raise Exception("Could not create field: 'firstobsday'.")
+
+                        field_firstobsmonth_defn = ogr.FieldDefn("firstobsmonth", ogr.OFTInteger)
+                        if lyr.CreateField(field_firstobsmonth_defn) != 0:
+                            raise Exception("Could not create field: 'firstobsmonth'.")
+
+                        field_firstobsyear_defn = ogr.FieldDefn("firstobsyear", ogr.OFTInteger)
+                        if lyr.CreateField(field_firstobsyear_defn) != 0:
+                            raise Exception("Could not create field: 'firstobsyear'.")
+
+                        # Last Observation Date
+                        field_lastobsday_defn = ogr.FieldDefn("lastobsday", ogr.OFTInteger)
+                        if lyr.CreateField(field_lastobsday_defn) != 0:
+                            raise Exception("Could not create field: 'lastobsday'.")
+
+                        field_lastobsmonth_defn = ogr.FieldDefn("lastobsmonth", ogr.OFTInteger)
+                        if lyr.CreateField(field_lastobsmonth_defn) != 0:
+                            raise Exception("Could not create field: 'lastobsmonth'.")
+
+                        field_lastobsyear_defn = ogr.FieldDefn("lastobsyear", ogr.OFTInteger)
+                        if lyr.CreateField(field_lastobsyear_defn) != 0:
+                            raise Exception("Could not create field: 'lastobsyear'.")
+
+                        # Observation Date Where Score Reached 5
+                        field_scr5obsday_defn = ogr.FieldDefn("scr5obsday", ogr.OFTInteger)
+                        if lyr.CreateField(field_scr5obsday_defn) != 0:
+                            raise Exception("Could not create field: 'scr5obsday'.")
+
+                        field_scr5obsmonth_defn = ogr.FieldDefn("scr5obsmonth", ogr.OFTInteger)
+                        if lyr.CreateField(field_scr5obsmonth_defn) != 0:
+                            raise Exception("Could not create field: 'scr5obsmonth'.")
+
+                        field_scr5obsyear_defn = ogr.FieldDefn("scr5obsyear", ogr.OFTInteger)
+                        if lyr.CreateField(field_scr5obsyear_defn) != 0:
+                            raise Exception("Could not create field: 'scr5obsyear'.")
+
+                        lyr_defn = lyr.GetLayerDefn()
+
+                        otherargs = ratapplier.OtherArguments()
+                        otherargs.lyr = lyr
+                        otherargs.lyr_defn = lyr_defn
+
+                        ratcontrols = ratapplier.RatApplierControls()
+                        ratcontrols.setProgress(progress_bar)
+                        ratapplier.apply(_ratapplier_check_string_col_valid, in_rats, out_rats, otherargs, controls=ratcontrols)
+
+                        # Update (create) the JSON LUT file.
+                        lut_file_name = "gmw_{}_lut.json".format(tile)
+                        lut_file_path = os.path.join(self.params["outlutdir"], lut_file_name)
+                        eodd_utils.get_file_lock(lut_file_path, sleep_period=1, wait_iters=120, use_except=True)
+                        if os.path.exists(lut_file_path):
+                            lut_dict = rsgis_utils.readJSON2Dict(lut_file_path)
+                        else:
+                            lut_dict = dict()
+
+                        obs_date_iso_str = scn_obs_date.isoformat()
+                        lut_dict[obs_date_iso_str] = dict()
+                        lut_dict[obs_date_iso_str]["file"] = out_vec_file
+                        lut_dict[obs_date_iso_str]["layer"] = tile
+
+                        rsgis_utils.writeDict2JSON(lut_dict, lut_file_path)
+                        eodd_utils.release_file_lock(lut_file_path)
+                        out_dict[tile] = out_vec_file
+
+                    ds = None
+                    outputs = True
+                    success = True
+                else:
+                    logger.debug("Scene is within window used to mask change outside of range.")
             else:
-                logger.debug("GenChngSummaryFeats was not available so previous step had not run...")
+                logger.debug("No change features available as outputs from previous steps...")
+        else:
+            logger.debug("GenChngSummaryFeats was not available so previous step had not run...")
 
-        except Exception as e:
-            logger.debug("An error occurred during plugin processing. See stacktrace...", stack_info=True)
-            logger.exception(e)
-            success = False
-
-        return success, out_dict
+        return success, out_dict, outputs
 

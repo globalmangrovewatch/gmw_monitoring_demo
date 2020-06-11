@@ -140,27 +140,28 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
         usr_req_keys = ["outdir", "tmpdir"]
         EODataDownUserAnalysis.__init__(self, analysis_name='GenChngSummaryFeats', req_keys=usr_req_keys)
 
-    def perform_analysis(self, scn_db_obj, sen_obj):
-        logger.info("Processing Scene: {}".format(scn_db_obj.PID))
+    def perform_analysis(self, scn_db_obj, sen_obj, plgin_objs):
+        logger.info("Processing Scene: {} {}".format(sen_obj.get_sensor_name(), scn_db_obj.PID))
         if scn_db_obj.Invalid:
-            return False, None
+            return False, None, False
         success = True
         out_dict = None
+        outputs = False
         rsgis_utils = rsgislib.RSGISPyUtils()
-        try:
-            scn_ext_info = scn_db_obj.ExtendedInfo
-            if (scn_ext_info is not None):
-                scn_chng_info = None
-                if 'LandsatGMWChangeFnl' in scn_ext_info:
-                    scn_chng_info = scn_ext_info['LandsatGMWChangeFnl']
-                elif 'Sentinel1GMWChangeFnl' in scn_ext_info:
-                    scn_chng_info = scn_ext_info['Sentinel1GMWChangeFnl']
-                elif 'Sentinel2GMWChangeFnl' in scn_ext_info:
-                    scn_chng_info = scn_ext_info['Sentinel2GMWChangeFnl']
-                else:
-                    raise Exception("The previous step creating the final change features on a 1 degree grid has not been executed.")
 
-            if isinstance(scn_chng_info, dict):
+        if sen_obj.get_sensor_name() == 'LandsatGOOG':
+            base_plgin_key = 'LandsatGMWChangeFnl'
+        elif sen_obj.get_sensor_name() == 'Sentinel2GOOG':
+            base_plgin_key = 'Sentinel2GMWChangeFnl'
+        elif sen_obj.get_sensor_name() == 'Sentinel1ASF':
+            base_plgin_key = 'Sentinel1GMWChangeFnl'
+        else:
+            raise Exception("The previous step creating the final change features on a 1 degree grid has not been executed.")
+
+        if base_plgin_key in plgin_objs:
+            if plgin_objs[base_plgin_key].Completed and plgin_objs[base_plgin_key].Output and plgin_objs[base_plgin_key].Success:
+                scn_chng_info = plgin_objs[base_plgin_key].ExtendedInfo
+
                 scn_unq_name = sen_obj.get_scn_unq_name_record(scn_db_obj)
                 base_tmp_dir = os.path.join(self.params["tmpdir"], "{}_tmp".format(scn_unq_name))
                 if not os.path.exists(base_tmp_dir):
@@ -219,19 +220,16 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
                         create_date_columns_from_days_col(sum_chng_img, 'lastobs1970days', base_date, 'lastobs_day', 'lastobs_month', 'lastobs_year')
                         create_date_columns_from_days_col(sum_chng_img, 'scr5obs1970days', base_date, 'scr5obs_day', 'scr5obs_month', 'scr5obs_year')
                         out_dict[tile] = sum_chng_img
+                        outputs = True
 
                 # Remove the tmp directory to clean up...
                 if os.path.exists(base_tmp_dir):
                     shutil.rmtree(base_tmp_dir)
-
-                success = True
             else:
-                logger.debug("No change features available as outputs from previous steps...")
+                outputs = False
+        else:
+            logger.debug("No change features available as outputs from previous steps...")
+            outputs = False
 
-        except Exception as e:
-            logger.debug("An error occurred during plugin processing. See stacktrace...", stack_info=True)
-            logger.exception(e)
-            success = False
-
-        return success, out_dict
+        return success, out_dict, outputs
 

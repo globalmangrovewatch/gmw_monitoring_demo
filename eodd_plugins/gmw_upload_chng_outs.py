@@ -35,14 +35,18 @@ class UploadGMWChange(EODataDownUserAnalysis):
         usr_req_keys = ["goog_cred", "bucket_name", "bucket_vec_dir", "bucket_lut_dir"]
         EODataDownUserAnalysis.__init__(self, analysis_name='UploadToGoog', req_keys=usr_req_keys)
 
-    def perform_analysis(self, scn_db_obj, sen_obj):
+    def perform_analysis(self, scn_db_obj, sen_obj, plgin_objs):
         logger.info("Processing Scene: {}".format(scn_db_obj.PID))
+        if scn_db_obj.Invalid:
+            return False, None, False
+
         success = True
         out_dict = None
-        try:
-            scn_ext_info = scn_db_obj.ExtendedInfo
-            if 'LandsatGMWChangeFnl' in scn_ext_info:
-                scn_chng_info = scn_ext_info['LandsatGMWChangeFnl']
+
+        if 'CreateSummaryVecFeats' in plgin_objs:
+            if plgin_objs['CreateSummaryVecFeats'].Completed and plgin_objs['CreateSummaryVecFeats'].Output and plgin_objs['CreateSummaryVecFeats'].Success:
+                scn_chng_info = plgin_objs['CreateSummaryVecFeats'].ExtendedInfo
+
                 import pprint
                 pprint.pprint(scn_chng_info)
                 vec_files = scn_chng_info["out_chng_vec"]
@@ -54,13 +58,8 @@ class UploadGMWChange(EODataDownUserAnalysis):
                 for lut_file in lut_files:
                     upload_to_google_bucket(lut_file, self.params["goog_cred"], self.params["bucket_name"], self.params["bucket_lut_dir"])
 
-            else:
-                logger.debug("No change features available as outputs from previous steps...")
+        else:
+            logger.debug("No change features available as outputs from previous steps...")
 
-        except Exception as e:
-            logger.debug("An error occurred during plugin processing. See stacktrace...", stack_info=True)
-            logger.exception(e)
-            success = False
-
-        return success, out_dict
+        return success, out_dict, False
 
