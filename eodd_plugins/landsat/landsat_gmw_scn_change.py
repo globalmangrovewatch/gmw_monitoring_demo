@@ -78,14 +78,14 @@ class LandsatGMWSceneChange(EODataDownUserAnalysis):
         if n_feats > 0:
             logger.debug("Proceeding with analysis as image intersects with some GMW polygons.")
             # Write the ROI GMW layer to disk.
-            gmw_roi_vec_file = os.path.join(base_tmp_dir, "{}_gmw_vec_lyr.geojson".format(basename))
-            rsgislib.vectorutils.writeVecLyr2File(gmw_roi_mem_lyr, gmw_roi_vec_file, 'gmw_roi', 'GEOJSON', options=['OVERWRITE=YES'], replace=True)
+            gmw_roi_vec_file = os.path.join(base_tmp_dir, "{}_gmw_vec_lyr.gpkg".format(basename))
+            rsgislib.vectorutils.writeVecLyr2File(gmw_roi_mem_lyr, gmw_roi_vec_file, 'gmw_roi', 'GPKG', options=['OVERWRITE=YES'], replace=True)
             # Close ROI memory layer
             gmw_roi_mem_ds = None
 
             # Reproject the ROI GMW Layer
-            gmw_roi_prj_vec_file = os.path.join(base_tmp_dir, "{}_gmw_vec_lyr_prj.geojson".format(basename))
-            cmd = "ogr2ogr -f GEOJSON -overwrite -nln gmw_roi -t_srs EPSG:{} {} {} gmw_roi".format(img_epsg, gmw_roi_prj_vec_file, gmw_roi_vec_file)
+            gmw_roi_prj_vec_file = os.path.join(base_tmp_dir, "{}_gmw_vec_lyr_prj.gpkg".format(basename))
+            cmd = "ogr2ogr -f GPKG -overwrite -nln gmw_roi -t_srs EPSG:{} {} {} gmw_roi".format(img_epsg, gmw_roi_prj_vec_file, gmw_roi_vec_file)
             logger.debug("Going to run command: '{}'".format(cmd))
             try:
                 subprocess.check_call(cmd, shell=True)
@@ -148,8 +148,8 @@ class LandsatGMWSceneChange(EODataDownUserAnalysis):
                     logger.debug("There are change gmw pixels to continue processing.")
 
                     # Vectorise the change features.
-                    gmw_chng_vec = os.path.join(out_dir, "{}_chng_gmw_vec.geojson".format(basename))
-                    rsgislib.vectorutils.polygoniseRaster2VecLyr(gmw_chng_vec, 'gmw_chng', 'GEOJSON', gmw_chng_img,
+                    gmw_chng_vec = os.path.join(out_dir, "{}_chng_gmw_vec.gpkg".format(basename))
+                    rsgislib.vectorutils.polygoniseRaster2VecLyr(gmw_chng_vec, 'gmw_chng', 'GPKG', gmw_chng_img,
                                                                  imgBandNo=1, maskImg=gmw_chng_img, imgMaskBandNo=1,
                                                                  replace_file=True, replace_lyr=True,
                                                                  pxl_val_fieldname='PXLVAL')
