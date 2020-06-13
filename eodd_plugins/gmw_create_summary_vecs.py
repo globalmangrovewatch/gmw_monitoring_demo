@@ -95,7 +95,7 @@ class CreateSummaryVecFeats(EODataDownUserAnalysis):
         out_dict = None
 
         if 'GenChngSummaryFeats' in plgin_objs:
-            if plgin_objs['GenChngSummaryFeats'].Completed and plgin_objs['GenChngSummaryFeats'].Output and plgin_objs['GenChngSummaryFeats'].Success:
+            if plgin_objs['GenChngSummaryFeats'].Completed and plgin_objs['GenChngSummaryFeats'].Outputs and plgin_objs['GenChngSummaryFeats'].Success:
                 scn_chng_info = plgin_objs['GenChngSummaryFeats'].ExtendedInfo
 
                 scn_unq_name = sen_obj.get_scn_unq_name_record(scn_db_obj)

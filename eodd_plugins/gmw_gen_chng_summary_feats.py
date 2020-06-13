@@ -159,7 +159,7 @@ class GenChngSummaryFeats(EODataDownUserAnalysis):
             raise Exception("The previous step creating the final change features on a 1 degree grid has not been executed.")
 
         if base_plgin_key in plgin_objs:
-            if plgin_objs[base_plgin_key].Completed and plgin_objs[base_plgin_key].Output and plgin_objs[base_plgin_key].Success:
+            if plgin_objs[base_plgin_key].Completed and plgin_objs[base_plgin_key].Outputs and plgin_objs[base_plgin_key].Success:
                 scn_chng_info = plgin_objs[base_plgin_key].ExtendedInfo
 
                 scn_unq_name = sen_obj.get_scn_unq_name_record(scn_db_obj)

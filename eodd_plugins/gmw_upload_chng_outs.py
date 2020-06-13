@@ -44,7 +44,7 @@ class UploadGMWChange(EODataDownUserAnalysis):
         out_dict = None
 
         if 'CreateSummaryVecFeats' in plgin_objs:
-            if plgin_objs['CreateSummaryVecFeats'].Completed and plgin_objs['CreateSummaryVecFeats'].Output and plgin_objs['CreateSummaryVecFeats'].Success:
+            if plgin_objs['CreateSummaryVecFeats'].Completed and plgin_objs['CreateSummaryVecFeats'].Outputs and plgin_objs['CreateSummaryVecFeats'].Success:
                 scn_chng_info = plgin_objs['CreateSummaryVecFeats'].ExtendedInfo
 
                 import pprint

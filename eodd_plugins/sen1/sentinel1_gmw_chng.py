@@ -100,7 +100,7 @@ class Sentinel1GMWChange(EODataDownUserAnalysis):
         eodd_utils = EODataDownUtils()
 
         if 'Sentinel1GMWScnChange' in plgin_objs:
-            if plgin_objs['Sentinel1GMWScnChange'].Completed and plgin_objs['Sentinel1GMWScnChange'].Output and plgin_objs['Sentinel1GMWScnChange'].Success:
+            if plgin_objs['Sentinel1GMWScnChange'].Completed and plgin_objs['Sentinel1GMWScnChange'].Outputs and plgin_objs['Sentinel1GMWScnChange'].Success:
                 scn_chng_info = plgin_objs['Sentinel1GMWScnChange'].ExtendedInfo
                 chng_feats_vec_file = scn_chng_info['chng_feats_vec']
                 logger.debug("Have change features vector file: {}".format(chng_feats_vec_file))

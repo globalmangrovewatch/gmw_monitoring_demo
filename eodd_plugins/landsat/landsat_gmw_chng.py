@@ -106,7 +106,7 @@ class LandsatGMWChange(EODataDownUserAnalysis):
         eodd_utils = EODataDownUtils()
 
         if 'LandsatGMWScnChange' in plgin_objs:
-            if plgin_objs['LandsatGMWScnChange'].Completed and plgin_objs['LandsatGMWScnChange'].Output and plgin_objs['LandsatGMWScnChange'].Success:
+            if plgin_objs['LandsatGMWScnChange'].Completed and plgin_objs['LandsatGMWScnChange'].Outputs and plgin_objs['LandsatGMWScnChange'].Success:
                 scn_chng_info = plgin_objs['LandsatGMWScnChange'].ExtendedInfo
                 chng_feats_vec_file = scn_chng_info['chng_feats_vec']
                 logger.debug("Have change features vector file: {}".format(chng_feats_vec_file))
