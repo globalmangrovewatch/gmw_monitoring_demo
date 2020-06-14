@@ -78,7 +78,7 @@ class Sentinel2GMWSceneChange(EODataDownUserAnalysis):
             logger.debug("Proceeding with analysis as image intersects with some GMW polygons.")
             # Write the ROI GMW layer to disk.
             gmw_roi_vec_file = os.path.join(base_tmp_dir, "{}_gmw_vec_lyr.gpkg".format(basename))
-            rsgislib.vectorutils.writeVecLyr2File(gmw_roi_mem_lyr, gmw_roi_vec_file, 'gmw_roi', 'G', options=['OVERWRITE=YES'], replace=True)
+            rsgislib.vectorutils.writeVecLyr2File(gmw_roi_mem_lyr, gmw_roi_vec_file, 'gmw_roi', 'GPKG', options=['OVERWRITE=YES'], replace=True)
 
             # Close ROI memory layer
             gmw_roi_mem_ds = None
