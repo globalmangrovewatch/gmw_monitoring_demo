@@ -6,6 +6,7 @@ import rsgislib
 import logging
 import os
 import datetime
+import pprint
 
 def upload_to_google_bucket(file_to_upload, goog_cred, bucket_name, bucket_dir):
     """
@@ -52,22 +53,34 @@ class UploadGMWChange(EODataDownUserAnalysis):
             scn_obs_date = scn_db_obj.Acquisition_Date
         else:
             raise Exception("Did not recognise the sensor name...")
+        logger.debug("Scene has a date of '{}'".format(scn_obs_date.isoformat()))
 
         base_date = datetime.datetime(year=2020, month=1, day=1)
         base_date_delta = scn_obs_date - base_date
         zero_date_delta = datetime.timedelta()
         if base_date_delta > zero_date_delta:
+            logger.debug("Scene is after 1/1/2020 and will therefore be uploaded")
             if 'CreateSummaryVecFeats' in plgin_objs:
+                logger.debug("Scene has had CreateSummaryVecFeats plugin executed.")
                 if plgin_objs['CreateSummaryVecFeats'].Completed and plgin_objs['CreateSummaryVecFeats'].Outputs and plgin_objs['CreateSummaryVecFeats'].Success:
+                    logger.debug("CreateSummaryVecFeats plugin has been successfully executed.")
                     scn_chng_info = plgin_objs['CreateSummaryVecFeats'].ExtendedInfo
-
+                    pprint.pprint(scn_chng_info)
                     for tile in scn_chng_info:
+                        logger.debug("Processing Tile: {}.".format(tile))
                         upload_to_google_bucket(scn_chng_info[tile]['file'], self.params["goog_cred"], self.params["bucket_name"], self.params["bucket_vec_dir"])
+                        logger.debug("Uploaded: {}.".format(scn_chng_info[tile]['file']))
                         lut_file_name = "gmw_{}_lut.json".format(tile)
                         lut_file_path = os.path.join(self.params["lcl_lut_dir"], lut_file_name)
+                        logger.debug("LUT file to upload: {}".format(lut_file_path))
                         upload_to_google_bucket(lut_file_path, self.params["goog_cred"], self.params["bucket_name"], self.params["bucket_lut_dir"])
+                        logger.debug("Uploaded: {}.".format(lut_file_path))
+                else:
+                    logger.debug("CreateSummaryVecFeats plugin has NOT been successfully executed")
             else:
                 logger.debug("No change features available as outputs from previous steps...")
+        else:
+            logger("Scene is from before 1/1/2020 and will therefore not be uploaded.")
 
         return success, out_dict, False
 
