@@ -253,8 +253,8 @@
                         {
                             "goog_cred":"/home/a.pfb/eodd_gmw_info/mangrove-atlas-246414-d513510b9b24.json",
                             "bucket_name":"mangrove_atlas",
-                            "bucket_vec_dir":"/deforestation-alerts/africa/luts",
-                            "bucket_lut_dir":"/deforestation-alerts/africa/vecs",
+                            "bucket_vec_dir":"/deforestation-alerts/africa/vecs",
+                            "bucket_lut_dir":"/deforestation-alerts/africa/luts",
                             "lcl_lut_dir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_tile_luts"
                         }
                     }
