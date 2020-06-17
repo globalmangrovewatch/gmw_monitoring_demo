@@ -503,6 +503,19 @@
                             "outvecdir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_vecs",
                             "outlutdir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_tile_luts"
                         }
+                    },
+                    {
+                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins",
+                        "module":"gmw_upload_chng_outs",
+                        "class":"UploadGMWChange",
+                        "params":
+                        {
+                            "goog_cred":"/home/a.pfb/eodd_gmw_info/mangrove-atlas-246414-d513510b9b24.json",
+                            "bucket_name":"mangrove_atlas",
+                            "bucket_vec_dir":"/deforestation-alerts/africa/luts",
+                            "bucket_lut_dir":"/deforestation-alerts/africa/vecs",
+                            "lcl_lut_dir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_fnl_tile_luts"
+                        }
                     }
                 ]
             }
