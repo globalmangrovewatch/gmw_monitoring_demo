@@ -103,7 +103,7 @@ class UploadGMWChange(EODataDownUserAnalysis):
                 else:
                     logger.debug("No change features available as outputs from previous steps...")
             else:
-                logger("Scene is from before 1/1/2020 and will therefore not be uploaded.")
+                logger.debug("Scene is from before 1/1/2020 and will therefore not be uploaded.")
         except Exception as e:
             print(e)
             import traceback
