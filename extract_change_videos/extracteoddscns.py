@@ -8,20 +8,8 @@ import datetime
 import glob
 import os
 
-def subset_mask_img(input_img, roi_vec_file, roi_vec_lyr, scn_tmp_dir, out_img):
-    basename = os.path.splitext(os.path.basename(input_img))[0]
-    rsgis_utils = rsgislib.RSGISPyUtils()
-    bbox = rsgis_utils.getVecLayerExtent(roi_vec_file, roi_vec_lyr)
-    rsgis_dtype = rsgis_utils.getRSGISLibDataTypeFromImg(input_img)
-    sub_img = os.path.join(scn_tmp_dir, "{}_sub.kea".format(basename))
-    rsgislib.imageutils.subsetbbox(input_img, sub_img, 'KEA', rsgis_dtype, bbox[0], bbox[1], bbox[2], bbox[3])
-    msk_img = os.path.join(scn_tmp_dir, "{}_msk.kea".format(basename))
-    rsgislib.vectorutils.rasteriseVecLyr(roi_vec_file, roi_vec_lyr, sub_img, msk_img, gdalformat="KEA")
-    rsgislib.imageutils.maskImage(sub_img, msk_img, out_img, "GTIFF", rsgis_dtype, 32767, 0)
-    rsgislib.imageutils.popImageStats(out_img, usenodataval=True, nodataval=32767, calcpyramids=True)
 
-
-def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file):
+def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file):
     rsgis_utils = rsgislib.RSGISPyUtils()
     bbox = rsgis_utils.getVecLayerExtent(roi_vec_file, roi_vec_lyr)
     bbox_epsg = rsgis_utils.getProjEPSGFromVec(roi_vec_file, roi_vec_lyr)
@@ -38,8 +26,10 @@ def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_dat
     print("N scns = {}".format(len(scns)))
 
     n_img = 1
+    scns_dict = dict()
     for scn in scns:
         print(scn.ARDProduct_Path)
+        scn_date_str = sen_obj.get_scn_obs_date(scn.PID).isoformat()
         try:
             scn_dB_file = glob.glob(os.path.join(scn.ARDProduct_Path, "*dB_osgb.tif"))
             if len(scn_dB_file) == 1:
@@ -66,34 +56,23 @@ def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_dat
 
             stch_img = os.path.join(out_dir, "{}_sen1_img.png".format(n_img))
             rsgislib.imageutils.stretchImageWithStats(sub_img, stch_img, stch_stats_file, 'PNG', rsgislib.TYPE_8UINT, rsgislib.imageutils.STRETCH_LINEARSTDDEV, 2)
-
+            scns_dict[scn_date_str] = stch_img
             print("")
         except:
             print("ERROR Caught but ignored")
+    rsgis_utils.writeDict2JSON(scns_dict, scn_json_file)
                     
 os.environ["RSGISLIB_IMG_CRT_OPTS_GTIFF"] = "TILED=YES:COMPRESS=LZW:BIGTIFF=YES"
-config_file = '/bigdata/eodd_wales_ard/scripts/eodd/config/EODataDownBaseConfig_psql.json'
+config_file = '/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_west_africa/EODataDownConfig_psql.json'
 start_date = datetime.datetime.now()
 end_date = datetime.datetime(year=2019, month=1, day=1)
 
-roi_vec_file = '/data/extract_sen1_data/wye_roi_osgb.geojson'
-roi_vec_lyr = 'wye_roi_osgb'
-out_dir = '/data/extract_sen1_data/out_data'
-tmp_dir = '/data/extract_sen1_data/tmp'
-extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir)
+roi_vec_file = 'site1.geojson'
+roi_vec_lyr = 'site1'
+out_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site1/imgs'
+tmp_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site1/tmp'
+stch_stats_file = '/scratch/a.pfb/gmw_monitoring/scripts/visual/sen1_strch_stats.txt'
+scn_json_file = '/scratch/a.pfb/gmw_monitoring/video_examples/site1/sen1_imgs.json'
+extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file)
 
-
-
-roi_vec_file = 'River_Shapefiles/Neath/Neath.shp'
-roi_vec_lyr = 'Neath'
-out_dir = '/data/extract_sen1_data/out_data_neath'
-tmp_dir = '/data/extract_sen1_data/tmp_neath'
-extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir)
-
-
-roi_vec_file = 'River_Shapefiles/Severn/Severn.shp'
-roi_vec_lyr = 'Severn'
-out_dir = '/data/extract_sen1_data/out_data_severn'
-tmp_dir = '/data/extract_sen1_data/tmp_severn'
-extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir)
 
