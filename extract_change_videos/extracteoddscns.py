@@ -58,7 +58,8 @@ def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_dat
             rsgislib.imageutils.stretchImageWithStats(sub_img, stch_img, stch_stats_file, 'PNG', rsgislib.TYPE_8UINT, rsgislib.imageutils.STRETCH_LINEARSTDDEV, 2)
             scns_dict[scn_date_str] = stch_img
             print("")
-        except:
+        except Exception as e:
+            print(e)
             print("ERROR Caught but ignored")
     rsgis_utils.writeDict2JSON(scns_dict, scn_json_file)
                     
