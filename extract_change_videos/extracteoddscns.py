@@ -7,7 +7,7 @@ import rsgislib
 import datetime
 import glob
 import os
-
+import subprocess
 
 def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file):
     rsgis_utils = rsgislib.RSGISPyUtils()
@@ -51,15 +51,22 @@ def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_dat
             rsgislib.imageutils.subsetbbox(scn_dB_file, sub_img, 'KEA', rsgis_dtype, bbox_img_proj[0], bbox_img_proj[1], bbox_img_proj[2], bbox_img_proj[3])
             rsgislib.imageutils.popImageStats(sub_img, usenodataval=True, nodataval=32767, calcpyramids=True)
 
-            stch_img = os.path.join(out_dir, "{}_sen1_img.png".format(n_img))
-            print(stch_img)
-            rsgislib.imageutils.stretchImageWithStats(sub_img, stch_img, stch_stats_file, 'PNG', rsgislib.TYPE_8UINT, rsgislib.imageutils.STRETCH_LINEARMINMAX, 2)
-            scns_dict[scn_date_str] = stch_img
+            stch_img = os.path.join(scn_tmp_dir, "{}_sub_stch.kea".format(basename))
+            rsgislib.imageutils.stretchImageWithStatsNoData(sub_img, stch_img, stch_stats_file, 'KEA', rsgislib.TYPE_8UINT, 32767,  rsgislib.imageutils.STRETCH_LINEARMINMAX, 2)
+
+            stch_vis_img = os.path.join(out_dir, "{}_sen1_img.jpg".format(n_img))
+            print(stch_vis_img)
+            cmd = 'gdal_translate -of JPEG -ot Byte {0} {1}'.format(stch_img, stch_vis_img)
+            print(cmd)
+            subprocess.check_call(cmd, shell=True)
+            
+            scns_dict[scn_date_str] = stch_vis_img
             print("")
         except Exception as e:
             print(e)
             print("ERROR Caught but ignored")
-        break
+        n_img = n_img + 1
+
     rsgis_utils.writeDict2JSON(scns_dict, scn_json_file)
                     
 os.environ["RSGISLIB_IMG_CRT_OPTS_GTIFF"] = "TILED=YES:COMPRESS=LZW:BIGTIFF=YES"
