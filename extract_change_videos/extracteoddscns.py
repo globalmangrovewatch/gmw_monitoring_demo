@@ -31,16 +31,13 @@ def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_dat
         print(scn.ARDProduct_Path)
         scn_date_str = sen_obj.get_scn_obs_date(scn.PID).isoformat()
         try:
-            scn_dB_file = glob.glob(os.path.join(scn.ARDProduct_Path, "*dB_osgb.tif"))
+            scn_dB_file = glob.glob(os.path.join(scn.ARDProduct_Path, "*dB.tif"))
             if len(scn_dB_file) == 1:
                 scn_dB_file = scn_dB_file[0]
             else:
                 raise Exception("There should only be 1 dB image for the scene.")
 
             basename = os.path.splitext(os.path.basename(scn_dB_file))[0]
-            scn_dir = os.path.join(out_dir, "{}_{}".format(scn.Product_File_ID, scn.PID))
-            if not os.path.exists(scn_dir):
-                os.mkdir(scn_dir)
                 
             scn_tmp_dir = os.path.join(tmp_dir, "{}_{}".format(scn.Product_File_ID, scn.PID))
             if not os.path.exists(scn_tmp_dir):
@@ -55,12 +52,14 @@ def extract_sen1_img_data(eodd_config_file, roi_vec_file, roi_vec_lyr, start_dat
             rsgislib.imageutils.popImageStats(sub_img, usenodataval=True, nodataval=32767, calcpyramids=True)
 
             stch_img = os.path.join(out_dir, "{}_sen1_img.png".format(n_img))
-            rsgislib.imageutils.stretchImageWithStats(sub_img, stch_img, stch_stats_file, 'PNG', rsgislib.TYPE_8UINT, rsgislib.imageutils.STRETCH_LINEARSTDDEV, 2)
+            print(stch_img)
+            rsgislib.imageutils.stretchImageWithStats(sub_img, stch_img, stch_stats_file, 'PNG', rsgislib.TYPE_8UINT, rsgislib.imageutils.STRETCH_LINEARMINMAX, 2)
             scns_dict[scn_date_str] = stch_img
             print("")
         except Exception as e:
             print(e)
             print("ERROR Caught but ignored")
+        break
     rsgis_utils.writeDict2JSON(scns_dict, scn_json_file)
                     
 os.environ["RSGISLIB_IMG_CRT_OPTS_GTIFF"] = "TILED=YES:COMPRESS=LZW:BIGTIFF=YES"
