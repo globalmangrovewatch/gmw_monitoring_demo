@@ -28,6 +28,10 @@ class ProcessEODDScn(PBPTQProcessTool):
                                                                                 self.params['scn_info'][2])
         return (not processing_required), dict()
 
+    def remove_outputs(self, **kwargs):
+        # Remove the output files.
+        print("Not implementing code to remove outputs - would need to add through to EODataDown plugins etc.")
+
 if __name__ == "__main__":
     ProcessEODDScn().std_run()
 
