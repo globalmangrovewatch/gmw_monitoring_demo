@@ -194,46 +194,6 @@
                             "out_vec_path":"/scratch/a.pfb/gmw_monitoring/data/west_africa/sen2/scn_chng_vecs",
                             "tmp_path":"/scratch/a.pfb/gmw_monitoring/data/west_africa/sen2/plugin_tmp"
                         }
-                    },
-                    {
-                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins/sen2",
-                        "module":"sentinel2_gmw_chng",
-                        "class":"Sentinel2GMWChange",
-                        "params":
-                        {
-                            "chng_lut_file":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_monitor_lut.gpkg",
-                            "chng_score_lut":"score_imgs",
-                            "chng_uid_lut":"uid_imgs",
-                            "out_data_path":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_wgs84_tiles",
-                            "tmp_path":"/scratch/a.pfb/gmw_monitoring/data/west_africa/sen2/plugin_tmp",
-                            "base_chngs":
-                            {
-                                "2018":
-                                {
-                                    "year": 2019,
-                                    "month": 5,
-                                    "day": 1,
-                                    "path": "/scratch/a.pfb/gmw_monitoring/monitoring/hist_chng_imgs_2018"
-                                },
-                                "2019":
-                                {
-                                    "year": 2020,
-                                    "month": 1,
-                                    "day": 1,
-                                    "path": "/scratch/a.pfb/gmw_monitoring/monitoring/hist_chng_imgs_2019"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "path":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_plugins",
-                        "module":"gmw_gen_chng_summary_feats",
-                        "class":"GenChngSummaryFeats",
-                        "params":
-                        {
-                            "outdir":"/scratch/a.pfb/gmw_monitoring/monitoring/gmw_chng_wgs84_sum_tiles",
-                            "tmpdir":"/scratch/a.pfb/gmw_monitoring/tmp_dir"
-                        }
                     }
                 ]
               }
