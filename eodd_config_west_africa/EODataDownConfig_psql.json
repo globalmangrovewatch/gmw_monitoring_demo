@@ -19,10 +19,6 @@
             "Sentinel2GOOG":
             {
                 "config":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_west_africa/Sentinel2Goog.json"
-            },
-            "Sentinel1ASF":
-            {
-                "config":"/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_west_africa/Sentinel1ASF.json"
             }
         }
     }
