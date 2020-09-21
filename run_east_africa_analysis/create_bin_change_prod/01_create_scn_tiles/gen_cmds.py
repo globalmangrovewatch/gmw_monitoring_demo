@@ -18,8 +18,8 @@ class GenCmdsGenBinChngMsks(PBPTGenQProcessToolCmds):
             sensor_obj = sys_main_obj.get_sensor_obj(sensor)
             logger.debug("Got sensor object for: '{}'.".format(sensor))
 
-            start_date = datetime.datetime(year=2018, month=1, day=1)
-            end_date = datetime.datetime.now()
+            end_date = datetime.datetime(year=2018, month=1, day=1)
+            start_date = datetime.datetime.now()
 
             scns = sensor_obj.query_scn_records_date(start_date, end_date, start_rec=0, n_recs=0, valid=True, cloud_thres=None)
 
