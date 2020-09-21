@@ -2,6 +2,7 @@ from pbprocesstools.pbpt_q_process import PBPTGenQProcessToolCmds
 import os.path
 import logging
 import glob
+import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ class GenCmdsGenBinChngMsks(PBPTGenQProcessToolCmds):
         import rsgislib
         rsgis_utils = rsgislib.RSGISPyUtils()
         tiles = glob.glob(os.path.join(kwargs['ref_tiles_path'], "*.kea"))
-        for tile in tiles:
+        for tile in tqdm.tqdm(tiles):
             tile_basename = rsgis_utils.get_file_basename(tile).replace("_chng_scr", "").replace("gmw_", "")
             tiles_to_merge = glob.glob(os.path.join(kwargs['scn_wgs84_img_path'], "*", "*{}*.kea".format(tile_basename)))
             if len(tiles_to_merge) > 0:
