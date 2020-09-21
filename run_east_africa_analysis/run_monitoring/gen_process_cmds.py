@@ -9,6 +9,7 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
     def gen_command_info(self, **kwargs):
         import eodatadown.eodatadownrun
         eodatadown.eodatadownrun.find_new_downloads(kwargs['config_file'], kwargs['sensors'])
+
         scns = eodatadown.eodatadownrun.get_scenes_need_processing_date_order(kwargs['config_file'], kwargs['sensors'])
         for scn in scns:
             c_dict = dict()
