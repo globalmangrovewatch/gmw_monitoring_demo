@@ -80,6 +80,44 @@ out_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site1/imgs'
 tmp_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site1/tmp'
 stch_stats_file = '/scratch/a.pfb/gmw_monitoring/scripts/visual/sen1_strch_stats.txt'
 scn_json_file = '/scratch/a.pfb/gmw_monitoring/video_examples/site1/sen1_imgs.json'
+#extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file)
+
+roi_vec_file = 'site2.geojson'
+roi_vec_lyr = 'site2'
+out_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site2/imgs'
+tmp_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site2/tmp'
+stch_stats_file = '/scratch/a.pfb/gmw_monitoring/scripts/visual/sen1_strch_stats.txt'
+scn_json_file = '/scratch/a.pfb/gmw_monitoring/video_examples/site2/sen1_imgs.json'
 extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file)
+
+roi_vec_file = 'site3.geojson'
+roi_vec_lyr = 'site3'
+out_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site3/imgs'
+tmp_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site3/tmp'
+stch_stats_file = '/scratch/a.pfb/gmw_monitoring/scripts/visual/sen1_strch_stats.txt'
+scn_json_file = '/scratch/a.pfb/gmw_monitoring/video_examples/site3/sen1_imgs.json'
+extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file)
+
+roi_vec_file = 'site4.geojson'
+roi_vec_lyr = 'site4'
+out_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site4/imgs'
+tmp_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site4/tmp'
+stch_stats_file = '/scratch/a.pfb/gmw_monitoring/scripts/visual/sen1_strch_stats.txt'
+scn_json_file = '/scratch/a.pfb/gmw_monitoring/video_examples/site4/sen1_imgs.json'
+extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file)
+
+roi_vec_file = 'site5.geojson'
+roi_vec_lyr = 'site5'
+out_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site5/imgs'
+tmp_dir = '/scratch/a.pfb/gmw_monitoring/video_examples/site5/tmp'
+stch_stats_file = '/scratch/a.pfb/gmw_monitoring/scripts/visual/sen1_strch_stats.txt'
+scn_json_file = '/scratch/a.pfb/gmw_monitoring/video_examples/site5/sen1_imgs.json'
+extract_sen1_img_data(config_file, roi_vec_file, roi_vec_lyr, start_date, end_date, out_dir, tmp_dir, stch_stats_file, scn_json_file)
+
+
+
+
+
+
 
 
