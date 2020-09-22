@@ -44,7 +44,7 @@ if __name__ == "__main__":
     process_tools_mod = 'merge_bin_tiles'
     process_tools_cls = 'MergeBinChngMsk'
 
-    create_tools = GenCmdsGenBinChngMsks(cmd=script_cmd, db_conn_file="/home/a.pfb/eodd_gmw_info/pbpt_db_conn_east.txt",
+    create_tools = GenCmdsGenBinChngMsks(cmd=script_cmd, db_conn_file="/home/a.pfb/eodd_gmw_info/pbpt_db_conn_west.txt",
                                         lock_file_path="./gmw_monitor_lock_file.txt",
                                         process_tools_mod=process_tools_mod, process_tools_cls=process_tools_cls)
     create_tools.parse_cmds()
