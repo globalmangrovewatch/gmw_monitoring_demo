@@ -14,7 +14,7 @@ class MergeBinChngMsk(PBPTQProcessTool):
         super().__init__(cmd_name='exe_scn_processing.py', descript=None)
 
     def do_processing(self, **kwargs):
-        rsgislib.imagecalc.calcMultiImgBandStats(self.params['merge_imgs'], self.params['out_img'], rsgislib.SUMTYPE_MAX, 'KEA', rsgislib.TYPE_8UINT, 0, False)
+        rsgislib.imagecalc.calcMultiImgBandStats(self.params['merge_imgs'], self.params['out_img'], rsgislib.SUMTYPE_SUM, 'KEA', rsgislib.TYPE_16UINT, 0, False)
         rsgislib.vectorutils.polygoniseRaster2VecLyr(self.params['out_vec_file'], self.params['out_vec_lyr'], 'GPKG', self.params['out_img'], imgBandNo=1, maskImg=self.params['out_img'],
                                                      imgMaskBandNo=1, replace_file=True, replace_lyr=True, pxl_val_fieldname='PXLVAL')
 
