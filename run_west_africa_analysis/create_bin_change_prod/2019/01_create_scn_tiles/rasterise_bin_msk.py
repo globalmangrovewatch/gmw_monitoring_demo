@@ -64,10 +64,14 @@ class RasteriseBinChngMsk(PBPTQProcessTool):
         return self.check_files(files_dict)
 
     def remove_outputs(self, **kwargs):
+        import shutil
         if os.path.exists(self.params['out_dir']):
-            import shutil
             shutil.rmtree(self.params['out_dir'])
             os.mkdir(self.params['out_dir'])
+
+        if os.path.exists(self.params['tmp_dir']):
+            shutil.rmtree(self.params['tmp_dir'])
+            os.mkdir(self.params['tmp_dir'])
 
 if __name__ == "__main__":
     RasteriseBinChngMsk().std_run()
