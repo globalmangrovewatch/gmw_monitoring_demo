@@ -3,7 +3,7 @@ import logging
 import os
 import rsgislib
 import rsgislib.vectorutils
-import rsgislib.imageutils.imagelut
+import rsgislib.imagecalc
 import subprocess
 
 logger = logging.getLogger(__name__)
