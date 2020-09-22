@@ -47,6 +47,11 @@ class MergeBinChngMsk(PBPTQProcessTool):
     def do_processing(self, **kwargs):
 
         merge_imgs = check_input_kea_imgs(self.params['merge_imgs'], n_bands=1, rm_files=False)
+        if os.path.exists(self.params['out_img']):
+            os.remove(self.params['out_img'])
+
+        if os.path.exists(self.params['out_vec_file']):
+            os.remove(self.params['out_vec_file'])
 
         rsgislib.imagecalc.calcMultiImgBandStats(merge_imgs, self.params['out_img'], rsgislib.SUMTYPE_SUM, 'KEA', rsgislib.TYPE_16UINT, 0, False)
         rsgislib.vectorutils.polygoniseRaster2VecLyr(self.params['out_vec_file'], self.params['out_vec_lyr'], 'GPKG', self.params['out_img'], imgBandNo=1, maskImg=self.params['out_img'],
