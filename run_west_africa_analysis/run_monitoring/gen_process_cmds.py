@@ -1,6 +1,7 @@
 from pbprocesstools.pbpt_q_process import PBPTGenQProcessToolCmds
 import os.path
 import logging
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +10,13 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
     def gen_command_info(self, **kwargs):
         import eodatadown.eodatadownrun
         eodatadown.eodatadownrun.find_new_downloads(kwargs['config_file'], kwargs['sensors'])
-        scns = eodatadown.eodatadownrun.get_scenes_need_processing_date_order(kwargs['config_file'], kwargs['sensors'])
+
+        start_date = datetime.datetime(year=2019, month=1, day=1)
+        end_date = datetime.datetime(year=2019, month=6, day=30)
+
+        scns = eodatadown.eodatadownrun.get_scenes_need_processing_date_order(kwargs['config_file'], kwargs['sensors'],
+                                                                              start_datetime=start_date,
+                                                                              end_datetime=end_date)
         for scn in scns:
             c_dict = dict()
             c_dict['scn_info'] = scn
