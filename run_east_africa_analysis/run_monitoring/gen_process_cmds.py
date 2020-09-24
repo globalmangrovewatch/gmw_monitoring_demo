@@ -9,7 +9,7 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
 
     def gen_command_info(self, **kwargs):
         import eodatadown.eodatadownrun
-        eodatadown.eodatadownrun.find_new_downloads(kwargs['config_file'], kwargs['sensors'])
+        #eodatadown.eodatadownrun.find_new_downloads(kwargs['config_file'], kwargs['sensors'])
 
         start_date = datetime.datetime(year=2019, month=1, day=1)
         end_date = datetime.datetime(year=2019, month=6, day=30)
