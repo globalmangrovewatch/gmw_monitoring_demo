@@ -223,7 +223,7 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                     gmw_tile_chng_img = gmw_tile_chng_mskd_img
                                     if n_chng_pxls > 0:
                                         # Mask the Score Image
-                                        eodd_utils.get_file_lock(scr_tile, sleep_period=1, wait_iters=120, use_except=True)
+                                        eodd_utils.get_file_lock(scr_tile, sleep_period=1, wait_iters=240, use_except=True)
                                         scr_tile_tmp = os.path.join(base_tmp_dir, "{}_{}_score_tmp.kea".format(basename, tile_basename))
                                         rsgislib.imageutils.maskImage(scr_tile, base_chng_tile_img, scr_tile_tmp, 'KEA', rsgislib.TYPE_8UINT, 0, 1)
                                         # Replace the score image.
@@ -231,7 +231,7 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                         eodd_utils.release_file_lock(scr_tile)
 
                                         # Mask the Score Image
-                                        eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=120, use_except=True)
+                                        eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=240, use_except=True)
                                         uid_tile_tmp = os.path.join(base_tmp_dir, "{}_{}_uid_tmp.kea".format(basename, tile_basename))
                                         rsgislib.imageutils.maskImage(uid_tile, base_chng_tile_img, uid_tile_tmp, 'KEA', rsgislib.TYPE_32UINT, 0, 1)
                                         # Replace the score image.
@@ -256,7 +256,7 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                     if not os.path.exists(out_scn_dir):
                                         os.mkdir(out_scn_dir)
 
-                                    eodd_utils.get_file_lock(scr_tile, sleep_period=1, wait_iters=120, use_except=True)
+                                    eodd_utils.get_file_lock(scr_tile, sleep_period=1, wait_iters=240, use_except=True)
                                     gmw_tile_reached_5scr_img = os.path.join(base_tmp_dir, "{}_{}_reached_5scr.kea".format(basename, tile_basename))
                                     band_defs = [rsgislib.imagecalc.BandDefn('score', scr_tile, 1),
                                                  rsgislib.imagecalc.BandDefn('chng', gmw_tile_chng_img, 1)]
@@ -267,9 +267,11 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                     band_defs = [rsgislib.imagecalc.BandDefn('score', scr_tile, 1),
                                                  rsgislib.imagecalc.BandDefn('clrsky', gmw_tile_clrsky_img, 1),
                                                  rsgislib.imagecalc.BandDefn('chng', gmw_tile_chng_img, 1)]
-                                    exp = '(chng==1)&&(score<5)?(score+2)>5?5:(score+2):(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-1:score' # optical data change is a score of 2 (SAR 1)
+                                    exp = '(chng==1)&&(score<5)?(score+2):(clrsky==1)&&(chng==0)&&(score>0)&&(score<5)?score-2:score'  # optical data change is a score of 2 (SAR 1)
+                                    lcl_tile_scr_tmp_img = os.path.join(base_tmp_dir, "{}_{}_score_tmp.kea".format(basename, tile_basename))
+                                    rsgislib.imagecalc.bandMath(lcl_tile_scr_tmp_img, exp, 'KEA', rsgislib.TYPE_16INT, band_defs, False, False)
                                     lcl_tile_scr_img = os.path.join(out_scn_dir, "{}_{}_score.kea".format(basename, tile_basename))
-                                    rsgislib.imagecalc.bandMath(lcl_tile_scr_img, exp, 'KEA', rsgislib.TYPE_8UINT, band_defs, False, False)
+                                    rsgislib.imagecalc.imageMath(lcl_tile_scr_tmp_img, lcl_tile_scr_img, 'b1<0?0:b1>5?5:b1', 'KEA', rsgislib.TYPE_8UINT)
                                     rsgislib.imageutils.popImageStats(lcl_tile_scr_img, usenodataval=True, nodataval=0, calcpyramids=True)
                                     tile_imgs_dict[tile_basename]['score'] = lcl_tile_scr_img
 
@@ -279,7 +281,7 @@ class Sentinel2GMWChange(EODataDownUserAnalysis):
                                     eodd_utils.release_file_lock(scr_tile)
 
                                     # Update the UID image
-                                    eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=120, use_except=True)
+                                    eodd_utils.get_file_lock(uid_tile, sleep_period=1, wait_iters=240, use_except=True)
                                     acq_date = scn_db_obj.Sensing_Time
                                     # year_obs = acq_date.year
                                     # day_year_obs = acq_date.timetuple().tm_yday
