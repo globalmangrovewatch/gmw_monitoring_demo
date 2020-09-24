@@ -13,16 +13,19 @@ class GenCmdsGenBinChngMsks(PBPTGenQProcessToolCmds):
 
         tiles = glob.glob(os.path.join(kwargs['base_chng_cnt_tiles'], "*.kea"))
         for tile in tiles:
+            print(tile)
             tile_basename = rsgis_utils.get_file_basename(tile)
-            tile_base = tile_basename.replace("_chng_bin_msk", "").replace()
+            tile_base = tile_basename.replace("_chng_bin_msk", "")
             out_base_name = 'gmw_{}_hist_chng'.format(tile_base)
             out_img = os.path.join(kwargs['out_chng_msk_img_dir'], "{}.kea".format(out_base_name))
             out_vec = os.path.join(kwargs['out_chng_msk_vec_dir'], "{}.gpkg".format(out_base_name))
+            print("\t{}".format(out_img))
+            print("\t{}".format(out_vec))
             if not (os.path.exists(out_img) and os.path.exists(out_vec)):
                 c_dict = dict()
                 c_dict['count_tile_img'] = tile
-                c_dict['out_img'] = tile
-                c_dict['out_vec'] = tile
+                c_dict['out_img'] = out_img
+                c_dict['out_vec'] = out_vec
                 c_dict['qa_edits_vec'] = kwargs['qa_edits_vec']
                 c_dict['qa_edits_lyr'] = kwargs['qa_edits_lyr']
                 c_dict['tmp_dir'] = os.path.join(kwargs['tmp_dir'], out_base_name)
@@ -31,9 +34,9 @@ class GenCmdsGenBinChngMsks(PBPTGenQProcessToolCmds):
                 self.params.append(c_dict)
 
     def run_gen_commands(self):
-        self.gen_command_info(base_chng_cnt_tiles='/scratch/a.pfb/gmw_monitoring/data_out/gmw_bin_chng_wgs84_tile',
+        self.gen_command_info(base_chng_cnt_tiles='/scratch/a.pfb/gmw_monitoring/data_out/gmw_bin_chng_wgs84_tiles',
                               qa_edits_vec='/scratch/a.pfb/gmw_monitoring/scripts/run_east_africa_analysis/create_bin_change_prod/change_edits/identified_change_regions.gpkg',
-                              qa_edits_lyr='chng_feats',
+                              qa_edits_lyr='identified_change_regions',
                               out_chng_msk_img_dir='/scratch/a.pfb/gmw_monitoring/monitoring/hist_chng_imgs_19_20_qad',
                               out_chng_msk_vec_dir='/scratch/a.pfb/gmw_monitoring/monitoring/hist_chng_imgs_19_20_qad_vec',
                               tmp_dir='/scratch/a.pfb/gmw_monitoring/tmp_dir')

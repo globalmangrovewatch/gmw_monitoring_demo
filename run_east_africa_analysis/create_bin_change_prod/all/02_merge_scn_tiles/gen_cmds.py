@@ -21,6 +21,8 @@ class GenCmdsGenBinChngMsks(PBPTGenQProcessToolCmds):
                 c_dict["out_img"] = os.path.join(kwargs['out_tile_path'], "{}_chng_bin_msk.kea".format(tile_basename))
                 c_dict["out_vec_file"] = os.path.join(kwargs['out_tile_path'], "{}_chng_bin_msk.gpkg".format(tile_basename))
                 c_dict["out_vec_lyr"] = tile_basename
+                print(c_dict["out_img"])
+                print(c_dict["out_vec_file"])
                 if not (os.path.exists(c_dict["out_vec_file"]) and os.path.exists(c_dict["out_vec_file"])):
                     self.params.append(c_dict)
 
