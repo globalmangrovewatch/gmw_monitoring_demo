@@ -89,8 +89,13 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
 #                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_18m/gmw_chng_alerts_202001_202006.gpkg",
 #                      datetime.datetime(year=2020, month=1, day=1))
 
-create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_22m/gmw_chng_fnl_tile_luts",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_22m/gmw_chng_fnl_vecs",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_22m/gmw_chng_alerts_202007_202009.gpkg",
-                      datetime.datetime(year=2020, month=7, day=1))
+#create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_22m/gmw_chng_fnl_tile_luts",
+#                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_22m/gmw_chng_fnl_vecs",
+#                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_22m/gmw_chng_alerts_202007_202009.gpkg",
+#                      datetime.datetime(year=2020, month=7, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_23m/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_23m/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_23m/gmw_chng_alerts_202011.gpkg",
+                      datetime.datetime(year=2020, month=9, day=1))
 
