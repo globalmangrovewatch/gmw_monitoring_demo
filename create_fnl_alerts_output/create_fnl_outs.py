@@ -6,6 +6,14 @@ import geopandas
 import numpy
 
 def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
+    """
+
+    :param luts_dir:
+    :param vec_dir:
+    :param out_vec_file:
+    :param update_date: The date at the start of the period of interest. Alerts after this date will be returned
+    :return:
+    """
     rsgis_utils = rsgislib.RSGISPyUtils()
     lut_files = glob.glob(os.path.join(luts_dir, "*.json"))
 
@@ -99,8 +107,13 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
 #                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_23m/gmw_chng_alerts_202011.gpkg",
 #                      datetime.datetime(year=2020, month=9, day=1))
 
-create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_24m/gmw_chng_fnl_tile_luts",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_24m/gmw_chng_fnl_vecs",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_24m/gmw_chng_alerts_202012.gpkg",
-                      datetime.datetime(year=2020, month=11, day=1))
+#create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_24m/gmw_chng_fnl_tile_luts",
+#                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_24m/gmw_chng_fnl_vecs",
+#                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_24m/gmw_chng_alerts_202012.gpkg",
+#                      datetime.datetime(year=2020, month=11, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202101/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202101/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202101/gmw_chng_alerts_202101.gpkg",
+                      datetime.datetime(year=2020, month=12, day=1))
 
