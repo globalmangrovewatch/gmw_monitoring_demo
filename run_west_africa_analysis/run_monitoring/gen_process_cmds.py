@@ -11,8 +11,8 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
         import eodatadown.eodatadownrun
         eodatadown.eodatadownrun.find_new_downloads(kwargs['config_file'], kwargs['sensors'])
 
-        start_date = datetime.datetime(year=2020, month=12, day=1)
-        end_date = datetime.datetime(year=2021, month=1, day=31)
+        start_date = datetime.datetime(year=2021, month=2, day=1)
+        end_date = datetime.datetime(year=2021, month=2, day=28)
 
         scns = eodatadown.eodatadownrun.get_scenes_need_processing_date_order(kwargs['config_file'], kwargs['sensors'],
                                                                               start_datetime=start_date,
