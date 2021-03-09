@@ -117,3 +117,9 @@ create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202101
                       "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202101/gmw_chng_alerts_202101.gpkg",
                       datetime.datetime(year=2020, month=12, day=1))
 
+
+#create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202102/gmw_chng_fnl_tile_luts",
+#                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202102/gmw_chng_fnl_vecs",
+#                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202102/gmw_chng_alerts_202102.gpkg",
+#                      datetime.datetime(year=2020, month=2, day=1))
+
