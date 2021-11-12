@@ -28,6 +28,10 @@ class ProcessEODDScn(PBPTQProcessTool):
                                                                                 self.params['scn_info'][2])
         return (not processing_required), dict()
 
+    def remove_outputs(self, **kwargs):
+        if ('debug' in kwargs) and kwargs['debug']:
+            print("No Implementation for remove_outputs")
+
 if __name__ == "__main__":
     ProcessEODDScn().std_run()
 

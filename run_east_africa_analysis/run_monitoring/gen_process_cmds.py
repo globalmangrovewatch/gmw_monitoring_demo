@@ -24,7 +24,7 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
                                  db_info_file=None, account_name='scw1376', n_cores_per_job=10, n_jobs=10,
                                  job_time_limit='2-23:59',
                                  module_load='module load parallel singularity\n\nexport http_proxy="http://a.pfb:proxy101019@10.212.63.246:3128"\nexport https_proxy="http://a.pfb:proxy101019@10.212.63.246:3128"\n')
-
+    """
     def run_check_outputs(self):
         process_tools_mod = 'exe_scn_processing'
         process_tools_cls = 'ProcessEODDScn'
@@ -32,11 +32,18 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
         out_err_file = 'processing_errs_{}.txt'.format(time_sample_str)
         out_non_comp_file = 'non_complete_errs_{}.txt'.format(time_sample_str)
         self.check_job_outputs(process_tools_mod, process_tools_cls, out_err_file, out_non_comp_file)
-
+    """
 
 if __name__ == "__main__":
     py_script = os.path.abspath("exe_scn_processing.py")
     script_cmd = "singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/au-eoed-py-dev.sif python {}".format(py_script)
 
-    create_tools = CreateEODataDownCmds(cmd=script_cmd, sqlite_db_file="eodd_ea_jobs.db")
+    process_tools_mod = 'exe_scn_processing'
+    process_tools_cls = 'ProcessEODDScn'
+
+    #create_tools = CreateEODataDownCmds(cmd=script_cmd, sqlite_db_file="eodd_ea_jobs.db")
+    create_tools = CreateEODataDownCmds(cmd=script_cmd, db_conn_file="/home/a.pfb/eodd_gmw_info/pbpt_db_conn_east.txt",
+                                        lock_file_path="./gmw_monitor_ea_lck.txt",
+                                        process_tools_mod=process_tools_mod, process_tools_cls=process_tools_cls)
+
     create_tools.parse_cmds()
