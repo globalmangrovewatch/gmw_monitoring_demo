@@ -1,4 +1,4 @@
-import rsgislib
+import rsgislib.tools.utils
 import glob
 import os
 import datetime
@@ -14,7 +14,6 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
     :param update_date: The date at the start of the period of interest. Alerts after this date will be returned
     :return:
     """
-    rsgis_utils = rsgislib.RSGISPyUtils()
     lut_files = glob.glob(os.path.join(luts_dir, "*.json"))
 
     base_date = datetime.datetime(year=1970, month=1, day=1)
@@ -23,7 +22,7 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
 
     for lut_file in lut_files:
         print(lut_file)
-        lut_dict = rsgis_utils.readJSON2Dict(lut_file)
+        lut_dict = rsgislib.tools.utils.read_json_to_dict(lut_file)
         first = True
         last_key = ''
         last_key_dt = None
