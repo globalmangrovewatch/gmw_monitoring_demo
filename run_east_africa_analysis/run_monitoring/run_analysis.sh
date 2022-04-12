@@ -5,7 +5,7 @@ export https_proxy="http://a.pfb:proxy101019@10.212.63.246:3128"
 
 singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/au-eoed-dev.sif python gen_process_cmds.py --gen
 
-sh ./run_exe_analysis.sh
+#sh ./run_exe_analysis.sh
 
 # Once all processing has completed...
 #singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/au-eoed-py-dev.sif python gen_process_cmds.py --check
