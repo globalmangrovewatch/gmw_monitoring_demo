@@ -1,4 +1,4 @@
-import rsgislib
+import rsgislib.tools.utils
 import glob
 import os
 import datetime
@@ -14,7 +14,6 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
     :param update_date: The date at the start of the period of interest. Alerts after this date will be returned
     :return:
     """
-    rsgis_utils = rsgislib.RSGISPyUtils()
     lut_files = glob.glob(os.path.join(luts_dir, "*.json"))
 
     base_date = datetime.datetime(year=1970, month=1, day=1)
@@ -23,7 +22,7 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
 
     for lut_file in lut_files:
         print(lut_file)
-        lut_dict = rsgis_utils.readJSON2Dict(lut_file)
+        lut_dict = rsgislib.tools.utils.read_json_to_dict(lut_file)
         first = True
         last_key = ''
         last_key_dt = None
@@ -118,8 +117,8 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
 #                      datetime.datetime(year=2020, month=12, day=1))
 
 
-create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202103/gmw_chng_fnl_tile_luts",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202103/gmw_chng_fnl_vecs",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202103/gmw_chng_alerts_202103.gpkg",
-                      datetime.datetime(year=2021, month=3, day=1))
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_alerts_202106.gpkg",
+                      datetime.datetime(year=2021, month=6, day=1))
 
