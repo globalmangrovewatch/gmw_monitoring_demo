@@ -117,8 +117,8 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
 #                      datetime.datetime(year=2020, month=12, day=1))
 
 
-create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202103/gmw_chng_fnl_tile_luts",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202103/gmw_chng_fnl_vecs",
-                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202103/gmw_chng_alerts_202103.gpkg",
-                      datetime.datetime(year=2021, month=3, day=1))
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_alerts_202106.gpkg",
+                      datetime.datetime(year=2021, month=6, day=1))
 
