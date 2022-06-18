@@ -11,8 +11,8 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
         import eodatadown.eodatadownrun
         #eodatadown.eodatadownrun.find_new_downloads(kwargs['config_file'], kwargs['sensors'])
 
-        start_date = datetime.datetime(year=2021, month=6, day=1)
-        end_date = datetime.datetime(year=2021, month=6, day=30)
+        start_date = datetime.datetime(year=2021, month=12, day=1)
+        end_date = datetime.datetime(year=2021, month=12, day=31)
 
         scns = eodatadown.eodatadownrun.get_scenes_need_processing_date_order(kwargs['config_file'], kwargs['sensors'],
                                                                               start_datetime=start_date,
@@ -23,8 +23,7 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
             self.params.append(c_dict)
 
     def run_gen_commands(self):
-        self.gen_command_info(config_file='/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_east_africa/EODataDownConfig_psql.json',
-                              sensors=['LandsatGOOG', 'Sentinel2GOOG'])
+        self.gen_command_info(config_file='/scratch/a.pfb/gmw_monitoring/scripts/eodd_config_east_africa/EODataDownConfig_psql.json', sensors=['Sentinel2GOOG'])#LandsatGOOG
         self.pop_params_db()
         self.create_slurm_sub_sh("eodd_ea_monitor", 18504, '/scratch/a.pfb/gmw_monitoring/logs',
                                  run_script='run_exe_analysis.sh', job_dir="job_scripts",
@@ -34,7 +33,7 @@ class CreateEODataDownCmds(PBPTGenQProcessToolCmds):
 
 if __name__ == "__main__":
     py_script = os.path.abspath("exe_scn_processing.py")
-    script_cmd = "singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/au-eoed-dev.sif python {}".format(py_script)
+    script_cmd = "singularity exec --bind /scratch/a.pfb:/scratch/a.pfb --bind /home/a.pfb:/home/a.pfb /scratch/a.pfb/sw_imgs/gmw-monitor-img.sif python {}".format(py_script)
 
     process_tools_mod = 'exe_scn_processing'
     process_tools_cls = 'ProcessEODDScn'
