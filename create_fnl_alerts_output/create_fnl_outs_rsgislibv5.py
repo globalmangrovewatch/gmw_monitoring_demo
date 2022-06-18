@@ -80,7 +80,7 @@ def create_fnl_alert_lyrs(luts_dir, vec_dir, out_vec_file, update_date):
         #break
 
 
-
+"""
 #create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_6m/gmw_chng_fnl_tile_luts",
 #                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_6m/gmw_chng_fnl_vecs",
 #                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_6m/gmw_chng_alerts_201901_201906.gpkg",
@@ -121,4 +121,39 @@ create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106
                       "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_fnl_vecs",
                       "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202106/gmw_chng_alerts_202106.gpkg",
                       datetime.datetime(year=2021, month=6, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202107/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202107/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202107/gmw_chng_alerts_202107.gpkg",
+                      datetime.datetime(year=2021, month=7, day=1))
+
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202108/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202108/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202108/gmw_chng_alerts_202108.gpkg",
+                      datetime.datetime(year=2021, month=8, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202109/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202109/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202109/gmw_chng_alerts_202109.gpkg",
+                      datetime.datetime(year=2021, month=9, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202110/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202110/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202110/gmw_chng_alerts_202110.gpkg",
+                      datetime.datetime(year=2021, month=10, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202111/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202111/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202111/gmw_chng_alerts_202111.gpkg",
+                      datetime.datetime(year=2021, month=11, day=1))
+
+"""
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202112/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202112/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202112/gmw_chng_alerts_202112.gpkg",
+                      datetime.datetime(year=2021, month=12, day=1))
+
+
 
