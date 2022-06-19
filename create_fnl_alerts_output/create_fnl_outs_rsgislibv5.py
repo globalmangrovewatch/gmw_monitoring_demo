@@ -148,12 +148,41 @@ create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202111
                       "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202111/gmw_chng_alerts_202111.gpkg",
                       datetime.datetime(year=2021, month=11, day=1))
 
-"""
-
 create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202112/gmw_chng_fnl_tile_luts",
                       "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202112/gmw_chng_fnl_vecs",
                       "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202112/gmw_chng_alerts_202112.gpkg",
                       datetime.datetime(year=2021, month=12, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202201/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202201/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202201/gmw_chng_alerts_202201.gpkg",
+                      datetime.datetime(year=2022, month=1, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202202/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202202/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202202/gmw_chng_alerts_202202.gpkg",
+                      datetime.datetime(year=2022, month=2, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202203/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202203/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202203/gmw_chng_alerts_202203.gpkg",
+                      datetime.datetime(year=2022, month=3, day=1)
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202204/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202204/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202204/gmw_chng_alerts_202204.gpkg",
+                      datetime.datetime(year=2022, month=4, day=1))
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202205/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202205/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202205/gmw_chng_alerts_202205.gpkg",
+                      datetime.datetime(year=2022, month=5, day=1))
+"""
+
+create_fnl_alert_lyrs("/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202206/gmw_chng_fnl_tile_luts",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202206/gmw_chng_fnl_vecs",
+                      "/Users/pete/Temp/gmw_monitoring_bin_base/chng_alts_202206/gmw_chng_alerts_202206.gpkg",
+                      datetime.datetime(year=2022, month=6, day=1))
 
 
 
